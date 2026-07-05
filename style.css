@@ -8,26 +8,29 @@
 .welcomescreen {
     border: solid rgba(67, 118, 221, 0.8);
     border-radius: 20px; 
-    padding: 9px; 
+    padding: 9px;
+    padding-top: 9px; 
     margin-top :10px;
 }
 
 .close-button {
     cursor: pointer;
     border: solid;
-    height: 12px;
+    height: 13px;
     width: 12px;
-    border-radius: 5px;
-    padding: 5px;
-    background-color: rgba(10, 121, 211, 0.2);
+    border-radius: 15px;
+    background-color: rgba(18, 14, 76, 0.35);
+    border: solid rgba(67, 118, 221, 0.8);
     align-items: center;
+    margin: 5px;
+    padding: 5px;
 }
 
 .noteButton {
     cursor: pointer;
     border: solid;
-    height: 12px;
-    width: 85px;
+    height: 15px;
+    width: 95px;
     border-radius: 5px;
     padding: 5px;
     background-color: rgba(10, 121, 211, 0.2);
@@ -35,11 +38,13 @@
 }
 
 .window {
+    font-family: Georgia, serif;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     backdrop-filter: blur(25px);
+    background-color: rgba(255, 255, 255, 0.25);
     border: solid;
     width: 280px;
     border-radius: 25px;
@@ -73,7 +78,6 @@
 
 .apps {
     padding-top: 10px;
-    padding-left: 10px;
     background-color: rgba(41, 119, 208, 0.2);
     border: solid rgba(56, 201, 230, 0.2);
     border-radius: 40px;
@@ -84,12 +88,12 @@
     margin: 10px
 }
 
-.selected {
+/*.selected {
     filter: drop-shadow(0 0 18px black);
     background-color: rgba(125, 151, 245, 0.2);
     border: solid rgba(21, 97, 238, 0.8);
     border-radius: 5px;
-}
+}*/
 
 #notesContainer {
   display: none;
