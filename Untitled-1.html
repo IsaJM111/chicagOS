@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <body style="background-image: url('https://images.squarespace-cdn.com/content/v1/55664553e4b0e48846329dc0/1513810378697-SE401H22HUNY98E30669/samples.jpg'); background-repeat: no-repeat; background-size: cover; margin: 0">
+<!-- WELCOME SCREEN !-->
+    <div id="welcome" class="window">
+      <div id="welcomeheader" class="header">
+    <h1 style="color: rgb(0, 0, 0)">
+      <b>chicag<strong>OS</strong></b>
+    </h1>
+    <p class="close-button" id="welcomeClose">X</p>
+      </div>
+      <div class="welcomescreen" style="background-image: url('C:\Users\drmjd\Pictures\welcomeBG.png'); background-size: cover; height: 400px;">
+        <h3 style="color: rgb(27, 57, 105)"> Welcome to ChicagOS! The perfect OS for a day in Chicago, created by an expert</h3>
+      </div>
+    </div>
+<!-- DEKTOP HEADER !-->
+    <div class="header">
+       <h1 id="welcomeOpen" style="cursor: pointer;"> <b>chicagOS</b> </h1>
+       <p id="timeElement" class = "clock"> --- </p>
+    </div>
+<!-- APP ICONS SIDEBAR !-->
+    <div id="desktopApps" class="apps"style="padding-top: 25px; padding-left: 15px;">
+      <div id="notesIcon" class="" style="text-align: center; width: fit-content; cursor: pointer;">
+        <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🗒️</div>
+        <p style="margin: 0; justify-content: center;">Notes</p>
+      </div> 
+      <!--<div id="mapIcon" class="" style="text-align: left; width: fit-content; cursor: pointer;">
+        <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🗺️</div>
+        <p style="margin: 0; justify-content: center;">Mind Map</p>
+      </div>-->
+      <div id="calculatorIcon" class="" style="text-align: center; width: fit-content; cursor: pointer;">
+        <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🧮</div>
+        <p style="margin: 0; justify-content: center;">Calculator</p>
+      </div>
+      <div id="galleryIcon" class="" style="text-align: center; width: fit-content; cursor: pointer;">
+        <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🖼️</div>
+        <p style="margin: 0; justify-content: center;">Gallery</p>
+      </div>
+    </div>
+<!-- NOTES WINDOW -->
+     <div id="notes" class="window" style="display: none">
+       <div class="header" id="notesheader">
+         <h1>Notes</h1>
+         <p class="close-button"; id="notesClose" style="backdrop-filter: blur(20px)">X</p>
+       </div>
+       <p class="noteButton"; id="newNote" style="backdrop-filter: blur(20px);"><strong>New Note +</strong></p>
+       <div id="notesContainer" style="display: none; flex-direction: column; gap: 10px; padding: 10px; overflow-y: auto; height: auto; border: solid rgba(0,0,0,0.1); border-radius: 15px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.5);">
+            <div id="notesContainer"></div>
+       </div>
+    </div>
+<!-- MIND MAP WINDOW --> <!--
+    <div id="mindMap" class="autoWindow" style="display: none">
+       <div class="header" id="mindMapheader">
+         <h1>Mind Map</h1>
+         <p class="close-button"; id="mindMapClose" style="backdrop-filter: blur(20px)">X</p>
+       </div>
+       <div class="mindMapControls"> 
+         <button class="mapButton"onclick="addChildNode()">Add Branch</button>
+         <button class="mapButton" onclick="deleteSelectedNode()">Delete Selected</button>
+       </div>
+       <div id="mindMapArea">
+         <svg id="mindMapLines"></svg>
+         <div class = "mind-node root-node" id="node-0" onclick="selectNode(0)">
+          <input type="text" value="Main Idea" onclick="event.stopPropagation()">
+         </div>
+       </div>
+    </div> -->
+<!-- CALCULATOR APP WINDOW -->
+    <div id="calculator" class="window" style="display: none; width: 300px">
+      <div class="header" id="calculatorheader"> 
+        <h1>Calculator</h1>
+        <p class="close-button"; id="calculatorClose" style="backdrop-filter: blur(20px)">X</p>
+      </div>
+      <div class="calculator-display" id="calculatorDisplay">0</div>
+      <div class="calculator-buttons">
+        <button class="calc-button clear-button" onclick="clearCalculator()">AC</button>
+        <button class="calc-button operator-button" onclick="deleteCalculator()">⌫</button>
+        <button class="calc-button operator-button"  onclick="calculator('%')">%</button>
+        <button class="calc-button operator-button" onclick="calculator('/')">÷</button>
+        <button class="calc-button" onclick="calculator('7')">7</button>
+        <button class="calc-button" onclick="calculator('8')">8</button>
+        <button class="calc-button" onclick="calculator('9')">9</button>
+        <button class="calc-button operator-button" onclick="calculator('*')">X</button>
+        <button class="calc-button" onclick="calculator('4')">4</button>
+        <button class="calc-button" onclick="calculator('5')">5</button>
+        <button class="calc-button" onclick="calculator('6')">6</button>
+        <button class="calc-button operator-button" onclick="calculator('-')">-</button>
+        <button class="calc-button" onclick="calculator('1')">1</button>
+        <button class="calc-button" onclick="calculator('2')">2</button>
+        <button class="calc-button" onclick="calculator('3')">3</button>
+        <button class="calc-button operator-button" onclick="calculator('+')">+</button>
+        <button class="calc-button zero-button" onclick="calculator('0')">0</button>
+        <button class="calc-button" onclick="calculator('.')">.</button>
+        <button class="calc-button equals-button" onclick="calculate()">=</button>
+      </div>
+    </div>
+<!-- GALLERY APP WINDOW -->
+     <div id="gallery" class="window" style="display: none">
+       <div class="header" id="galleryheader">
+         <h1>Gallery</h1>
+         <p class="close-button"; id="galleryClose" style="backdrop-filter: blur(20px)">X</p>
+       </div>
+       <div id="galleryContainer" class="gallery-container">
+        <img id="galleryImage" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCM_d9SQ56xa8ccPT63FoBy0Jec32p7TRisgVzN3A0Qg&s=10" alt="Gallery photo">
+        <div class="galleryControls">
+          <button onclick="previousPhoto()">←</button>
+          <span id="galleryNumber">1 / 13</span>
+          <button onclick="nextPhoto()">→</button>
+        </div>
+       </div>
+    </div>
+<!-- REFS -->
+      <script src="script.js"></script>
+     <link rel="stylesheet" type="text/css" href="style.css" />
+   </body>
+</html>
+
+
