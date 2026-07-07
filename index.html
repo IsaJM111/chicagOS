@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <body style="background-image: url('https://images.squarespace-cdn.com/content/v1/55664553e4b0e48846329dc0/1513810378697-SE401H22HUNY98E30669/samples.jpg'); background-repeat: no-repeat; background-size: cover; margin: 0">
+  <body class="background">
 <!-- WELCOME SCREEN !-->
     <div id="welcome" class="window">
       <div id="welcomeheader" class="header">
@@ -14,9 +14,10 @@
       </div>
     </div>
 <!-- DEKTOP HEADER !-->
-    <div class="header">
-       <h1 id="welcomeOpen" style="cursor: pointer;"> <b>chicagOS</b> </h1>
-       <p id="timeElement" class = "clock"> --- </p>
+    <div class="desktopHeader">
+       <h1 id="welcomeOpen" style="cursor: pointer; justify-content: left;"> <b>chicagOS</b> </h1>
+       <div class = "quote" id="quotes">'I miss everything about Chicago, except January and February.' —Gary Cole</div>
+       <p id="timeElement" style="justify-content: right" class="clock"> ----------- </p>
     </div>
 <!-- APP ICONS SIDEBAR !-->
     <div id="desktopApps" class="apps"style="padding-top: 25px; padding-left: 15px;">
@@ -24,10 +25,10 @@
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🗒️</div>
         <p style="margin: 0; justify-content: center;">Notes</p>
       </div> 
-      <!--<div id="mapIcon" class="" style="text-align: left; width: fit-content; cursor: pointer;">
+      <div id="mapIcon" class="" style="text-align: left; width: fit-content; cursor: pointer;">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🗺️</div>
         <p style="margin: 0; justify-content: center;">Mind Map</p>
-      </div>-->
+      </div>
       <div id="calculatorIcon" class="" style="text-align: center; width: fit-content; cursor: pointer;">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🧮</div>
         <p style="margin: 0; justify-content: center;">Calculator</p>
@@ -35,6 +36,10 @@
       <div id="galleryIcon" class="" style="text-align: center; width: fit-content; cursor: pointer;">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🖼️</div>
         <p style="margin: 0; justify-content: center;">Gallery</p>
+      </div>
+      <div id="paintIcon" class="" style="text-align: center; width: fit-content; cursor: pointer;">
+        <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🎨</div>
+        <p style="margin: 0; justify-content: center;">Paint</p>
       </div>
     </div>
 <!-- NOTES WINDOW -->
@@ -44,19 +49,20 @@
          <p class="close-button"; id="notesClose" style="backdrop-filter: blur(20px)">X</p>
        </div>
        <p class="noteButton"; id="newNote" style="backdrop-filter: blur(20px);"><strong>New Note +</strong></p>
-       <div id="notesContainer" style="display: none; flex-direction: column; gap: 10px; padding: 10px; overflow-y: auto; height: auto; border: solid rgba(0,0,0,0.1); border-radius: 15px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.5);">
+       <div id="notesContainer" class="notesContainer">
             <div id="notesContainer"></div>
        </div>
     </div>
-<!-- MIND MAP WINDOW --> <!--
+<!-- MIND MAP WINDOW --> 
     <div id="mindMap" class="autoWindow" style="display: none">
        <div class="header" id="mindMapheader">
          <h1>Mind Map</h1>
          <p class="close-button"; id="mindMapClose" style="backdrop-filter: blur(20px)">X</p>
        </div>
        <div class="mindMapControls"> 
-         <button class="mapButton"onclick="addChildNode()">Add Branch</button>
+         <button class="mapButton" onclick="addChildNode()">Add Branch</button>
          <button class="mapButton" onclick="deleteSelectedNode()">Delete Selected</button>
+         <button class="mapButton" onclick="clearAllNodes()">Clear All</button>
        </div>
        <div id="mindMapArea">
          <svg id="mindMapLines"></svg>
@@ -64,7 +70,7 @@
           <input type="text" value="Main Idea" onclick="event.stopPropagation()">
          </div>
        </div>
-    </div> -->
+    </div> 
 <!-- CALCULATOR APP WINDOW -->
     <div id="calculator" class="window" style="display: none; width: 300px">
       <div class="header" id="calculatorheader"> 
@@ -80,7 +86,7 @@
         <button class="calc-button" onclick="calculator('7')">7</button>
         <button class="calc-button" onclick="calculator('8')">8</button>
         <button class="calc-button" onclick="calculator('9')">9</button>
-        <button class="calc-button operator-button" onclick="calculator('*')">X</button>
+        <button class="calc-button operator-button" onclick="calculator('*')">x</button>
         <button class="calc-button" onclick="calculator('4')">4</button>
         <button class="calc-button" onclick="calculator('5')">5</button>
         <button class="calc-button" onclick="calculator('6')">6</button>
@@ -107,6 +113,27 @@
           <span id="galleryNumber">1 / 13</span>
           <button onclick="nextPhoto()">→</button>
         </div>
+       </div>
+    </div>
+<!-- PAINT WINDOW -->
+     <div id="paint" class="paintwindow" style="display: none">
+       <div class="header" id="paintheader">
+         <h1>Paint</h1>
+         <p class="close-button"; id="paintClose" style="backdrop-filter: blur(20px)">X</p>
+       </div>
+       <div class="paintControls">
+          <input class="colorPicker" type="color" id="colorPicker" value="#000000">
+          <label for="brushSize">Size:</label>
+          <input class="brushSize" type="range" id="brushSize" min="1" max="50" value="5">
+          <div class="paintControlsGrid">
+            <button class="paintButton" onclick="toggleEraser()">🧹</button>
+            <button class="paintButton" onclick="saveCanvas()">💾</button>
+            <button class="paintButton" onclick="loadCanvas()">🔄</button>
+            <button class="paintButton" onclick="clearCanvas()">🗑️</button>
+          </div>
+        </div>
+       <div id="paintContainer" class="paint-container">
+          <canvas id="paintCanvas" class="paintCanvas" width="480" height="480"></canvas>
        </div>
     </div>
 <!-- REFS -->
