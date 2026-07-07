@@ -20,69 +20,6 @@ function handleIconTap(notesIcon) {
 notesIcon.addEventListener("click", function() {
   handleIconTap(notesIcon);
 });
-
-function selectIcon(mapIcon) {
-  mapIcon.classList.add("selected");
-  selectedIcon = mapIcon
-} 
-function deselectIcon(mapIcon) {
-  mapIcon.classList.remove("selected");
-  selectedIcon = undefined
-}
-
-function handleIconTap(mapIcon) {
-  if (mapIcon.classList.contains("selected")) {
-    deselectIcon(mapIcon);
-  } else {
-    selectIcon(mapIcon);
-  }
-}
-
-mapIcon.addEventListener("click", function() {
-  handleIconTap(mapIcon);
-});
-
-function selectIcon(calculatorIcon) {
-  calculatorIcon.classList.add("selected");
-  selectedIcon = calculatorIcon
-} 
-function deselectIcon(calculatorIcon) {
-  calculatorIcon.classList.remove("selected");
-  selectedIcon = undefined
-}
-
-function handleIconTap(calculatorIcon) {
-  if (calculatorIcon.classList.contains("selected")) {
-    deselectIcon(calculatorIcon);
-  } else {
-    selectIcon(calculatorIcon);
-  }
-}
-
-calculatorIcon.addEventListener("click", function() {
-  handleIconTap(calculatorIcon);
-});
-
-function selectIcon(galleryIcon) {
-  galleryIcon.classList.add("selected");
-  selectedIcon = galleryIcon
-} 
-function deselectIcon(galleryIcon) {
-  galleryIcon.classList.remove("selected");
-  selectedIcon = undefined
-}
-
-function handleIconTap(galleryIcon) {
-  if (galleryIcon.classList.contains("selected")) {
-    deselectIcon(galleryIcon);
-  } else {
-    selectIcon(galleryIcon);
-  }
-}
-
-galleryIcon.addEventListener("click", function() {
-  handleIconTap(galleryIcon);
-});
 */
 
 // Clock
@@ -98,9 +35,10 @@ setInterval(updateTime, 1000);
 
 dragElement(document.getElementById("welcome"));
 dragElement(document.getElementById("notes"));
-//dragElement(document.getElementById("mindMap"));
+dragElement(document.getElementById("mindMap"));
 dragElement(document.getElementById("calculator"));
 dragElement(document.getElementById("gallery"));
+dragElement(document.getElementById("paint"));
 
 function dragElement(element) {
 
@@ -179,7 +117,7 @@ notesScreenOpen.addEventListener("click", function() {
 });
 
 // Mind Map app open
-/*
+
 var mindMapScreen = document.querySelector("#mindMap")
 var mindMapScreenClose = document.querySelector("#mindMapClose")
 var mindMapScreenOpen = document.querySelector("#mapIcon")
@@ -196,7 +134,7 @@ mindMapScreenClose.addEventListener("click", function() {
 mindMapScreenOpen.addEventListener("click", function() {
   openWindow(mindMapScreen);
 });
-*/
+
 // Notes main code
 
 const notesContainer = document.querySelector("#notesContainer");
@@ -268,8 +206,8 @@ function calculate() {
   }
 }
 
-// Mind Map app main code
-/*
+// MIND MAPP APP MAIN CODE
+
 let selectedNodeId = 0;
 let nextNodeId = 1;
 
@@ -278,7 +216,7 @@ const nodes = {
     id: 0,
     parent: null,
     children: [],
-    x: 500,
+    x: 350,
     y: 220
   }
 };
@@ -298,13 +236,12 @@ function addChildNode() {
   nextNodeId++;
   const childNumber = parent.children.length;
   const verticalSpacing = 105;
-  const horizontalSpacing = 230;
+  const horizontalSpacing = 160;
   let newX = parent.x + horizontalSpacing;
   let newY = parent.y + (childNumber * verticalSpacing);
   if (parent.children.length > 0) {
     newY = parent.y + ((childNumber - parent.children.length / 2) * verticalSpacing);
   }
-
   nodes[newId] = {
     id: newId,
     parent: selectedNodeId,
@@ -312,20 +249,17 @@ function addChildNode() {
     x: newX,
     y: newY
   };
-
   parent.children.push(newId);
-
   const newNode = document.createElement("div");
   newNode.className = "mind-node";
   newNode.id = "node-" + newId;
   newNode.dataset.id = newId;
   newNode.style.left = newX + "px";
   newNode.style.top = newY + "px";
-  newNode.innerHTML = `
-    <input type="text" value="New Idea"
-      onclick="event.stopPropagation()">
-  `;
-  newNode.onclick = function () {
+  newNode.innerHTML = 
+  `<input type="text" value="New Idea"
+    onclick="event.stopPropagation()">`;
+  newNode.onclick = function() {
     selectNode(newId);
   };
   document.getElementById("mindMapArea").appendChild(newNode);
@@ -348,6 +282,7 @@ function rearrangeChildren(parentId) {
     childElement.style.top = child.y + "px";
     rearrangeChildren(childId);
   });
+  drawMindMapLines();
 }
 
 function drawMindMapLines() {
@@ -372,6 +307,11 @@ function drawMindMapLines() {
     line.setAttribute("stroke-width", "3");
     svg.appendChild(line);
   });
+  console.log(
+    "Node:", node.id,
+    "Parent:", node.parent,
+    "Parent exists:", nodes[node.parent]
+  );
 }
 
 function deleteSelectedNode() {
@@ -397,9 +337,22 @@ function deleteNodeAndChildren(id) {
   rearrangeChildren(parent.id);
 }
 
+function clearAllNodes() {
+  Object.keys(nodes).forEach(id => {
+    if (id != 0) {
+      document.getElementById("node-" + id).remove();
+      delete nodes[id];
+    }
+  });
+  nodes[0].children = [];
+  selectedNodeId = 0;
+  selectNode(0);
+  drawMindMapLines();
+}
+
 selectNode(0);
-*/
-// Gallery open and main code
+
+// GALLERY APP OPEN & MAIN CODE
 
 var galleryScreen = document.querySelector("#gallery")
 var galleryScreenClose = document.querySelector("#galleryClose")
@@ -450,3 +403,52 @@ function previousPhoto() {
     currentPhoto = galleryPhotos.length - 1;}
   showPhoto();
 }
+
+// PAINT APP OPEN
+
+var paintScreen = document.querySelector("#paint")
+var paintScreenClose = document.querySelector("#paintClose")
+var paintScreenOpen = document.querySelector("#paintIcon")
+
+function closeWindow(element) {
+  element.style.display = "none"
+}
+function openWindow(element) {
+  element.style.display = "block"
+}
+
+paintScreenClose.addEventListener("click", function() {
+  closeWindow(paintScreen);
+});
+paintScreenOpen.addEventListener("click", function() {
+  openWindow(paintScreen);
+});
+
+// PAINT APP MAIN CODE
+
+const canvas = document.getElementById("paintCanvas");
+const ctx = canvas.getContext("2d");
+let painting = false;
+
+// QUOTES MAIN CODE
+
+const quotes = [
+  "'I miss everything about Chicago, except January and February.' —Gary Cole",
+  "'Chicago is an October sort of city even in spring.' —Nelson Algren",
+  "'My first day in Chicago... I knew I belonged here.' —Oprah Winfrey",
+  "'Chicago is the city that works.' —Richard J. Daley",
+  "'It is wonderful to be here in the great state of Chicago.' —Dan Quayle",
+  "'Blessed are the people of Chicago, and blessed are the strangers in their midst.' —James Parton",
+  "'Id rather be a lamppost in Chicago than a millionare in any other city.' —William A. Hulbert"
+];
+
+function cycleQuotes() {
+  const quoteElement = document.getElementById("quotes");
+  const currentQuote = quoteElement.textContent;
+  let nextQuoteIndex = quotes.indexOf(currentQuote) + 1;
+  if (nextQuoteIndex >= quotes.length) {
+    nextQuoteIndex = 0;
+  }
+  quoteElement.textContent = quotes[nextQuoteIndex];
+}
+setInterval(cycleQuotes, 50000);
