@@ -5,11 +5,53 @@
     margin: 0;
 }
 
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(255, 255, 255, 0.15);
+    backdrop-filter:blur(2px);
+    pointer-events:none;
+}
+
+.desktopIcon {
+    width:56px;
+    height:56px;
+    border-radius:16px;
+    background:rgba(255,255,255,.35);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    transition:.2s;
+    cursor:pointer;
+}
+
+.desktopIcon:hover{
+    transform:translateY(-2px);
+    transform:scale(1.1);
+    background:rgba(255,255,255,.55);
+    transition: 2px;
+}
+
+.headerText{
+    cursor: pointer;
+    justify-content: left;
+}
+
+.headerText:hover{
+    transform: scale(1.03);
+}
+
 .clock {
     border: solid rgba(0,0,0,0.2); 
     border-radius: 10px; 
     padding: 5px; 
     background-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 10px 35px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.15);
+}
+
+.clock:hover {
+    transform: scale(1.01);
 }
 
 .welcomescreen {
@@ -22,15 +64,21 @@
 
 .close-button {
     cursor: pointer;
-    border: solid;
-    height: 13px;
-    width: 12px;
-    border-radius: 15px;
-    background-color: rgba(18, 14, 76, 0.35);
-    border: solid rgba(67, 118, 221, 0.8);
+    height: 15px;
+    width: 15px;
     align-items: center;
     margin: 5px;
-    padding: 5px;
+    background: none;
+}
+
+.close-button:hover {
+    transform: scale(1.04);
+}
+
+.notesControls {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
 }
 
 .noteButton {
@@ -41,7 +89,7 @@
     border-radius: 10px;
     padding: 5px;
     background-color: rgba(10, 121, 211, 0.2);
-    border: solid rgba(67, 118, 221, 0.8);
+    border: none;
     align-items: center;
     font-size: 16px;
     color: rgb(27,57,105);
@@ -66,6 +114,8 @@
     border-radius: 25px;
     padding: 10px;
     justify-content:space-between;
+    border: solid rgba(70, 74, 82, 0.35);
+    box-shadow:0 10px 35px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.15);
 }
 .autoWindow {
     position: absolute;
@@ -78,24 +128,27 @@
     border-radius: 25px;
     padding: 10px;
     justify-content:space-between;
+    border: solid rgba(70, 74, 82, 0.35);
+    box-shadow:0 10px 35px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.15);
 }
 
 .header {
     display: flex;
     height: 35px;
     justify-content: space-between;
-    border: solid rgba(67, 118, 221, 0.8);
+    border: solid rgba(70, 74, 82, 0.35);
     border-radius: 20px;
     padding: 10px;
     align-items: center;
     backdrop-filter: blur(10px);
     background-color: rgba(56, 119, 208, 0.2);
+    box-shadow: inset 5px 5px 5px 5px rgba(255,255,255,.4);
 }
 
 .desktopHeader {
     display: flex;
     height: 35px;
-    border: solid rgba(67, 118, 221, 0.8);
+    border: solid rgba(70, 74, 82, 0.35);
     border-radius: 20px;
     padding: 10px;
     align-items: center;
@@ -116,16 +169,22 @@
     text-align: center;
 }
 
+.quote:hover {
+    transform: scale(1.01);
+}
+
 .apps {
     padding-top: 10px;
-    background-color: rgba(41, 119, 208, 0.2);
-    border: solid rgba(56, 201, 230, 0.2);
-    border-radius: 40px;
     width: 70px;
     height: 620px;
     align-items: center;
     position: absolute;
-    margin: 10px
+    margin: 10px;
+    left: 10px;
+    top: 70px;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
 }
 
 /*.selected {
@@ -135,31 +194,45 @@
     border-radius: 5px;
 }*/
 
-#notesContainer {
-  display: none;
-  flex-direction: column;
-  gap: 10px;
-  padding: 10px;
-  overflow-y: auto;
-  max-height: 350px;
-  border: solid rgba(67, 118, 221, 0.8);
-  border-radius: 15px;
-  margin-top: 10px;
-  background-color: rgba(255, 255, 255, 0.4);
+#notes{
+    width:800px;
+    height:560px;
+    display:flex;
+    flex-direction:column;
 }
 
-.note {
-  position: relative;
-  min-height: 80px;
-  padding: 12px 40px 12px 12px;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.5);
+.notesToolbar{
+    margin-top:12px;
+    margin-bottom:12px;
 }
 
-.note-input {
-  min-height: 60px;
-  outline: none;
-  color: black;
+.notesContainer{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    overflow-y:auto;
+    padding:15px;
+    border-radius:18px;
+    background:rgba(255,255,255,.32);
+    border:1px solid rgba(0,0,0,.12);
+}
+
+.note{
+    position:relative;
+    min-height:60px;
+    border-radius:14px;
+    padding:15px;
+    padding-top:45px;
+    background:white;
+    box-shadow:0 5px 15px rgba(0,0,0,.12);
+}
+
+.note-input{
+    min-height:60px;
+    outline:none;
+    white-space:pre-wrap;
+    word-break:break-word;
 }
 
 .note-input:empty::before {
@@ -168,15 +241,85 @@
   pointer-events: none;
 }
 
-.delete-note {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  border: solid rgba(67, 118, 221, 0.8);
-  border-radius: 50%;
-  cursor: pointer;
-  padding: 4px 8px;
-  font-weight: bold;
+.save-note{
+    position:absolute;
+    top:8px;
+    right:45px;
+    border:none;
+    border-radius:10px;
+    padding:6px 10px;
+    cursor:pointer;
+}
+
+.save-note:hover{
+    background-color: rgba(41, 119, 208, 0.35);
+    transform: scale(1.04);   
+}
+
+.delete-note{
+    position:absolute;
+    top:8px;
+    right:8px;
+    border:none;
+    border-radius:10px;
+    padding:6px 10px;
+    cursor:pointer;
+}
+
+.delete-note:hover{
+    background-color: rgba(41, 119, 208, 0.35);
+    transform: scale(1.04);
+}
+
+.load-note-button{
+    width:100%;
+    text-align:left;
+    padding:10px;
+    margin-bottom:8px;
+    border:none;
+    border-radius:10px;
+    background:rgba(255,255,255,.45);
+    cursor:pointer;
+}
+
+.notesContainer::-webkit-scrollbar,
+.savedNotes::-webkit-scrollbar{
+    width:8px;
+}
+.notesContainer::-webkit-scrollbar-thumb,
+.savedNotes::-webkit-scrollbar-thumb{
+    background:rgba(0,0,0,.25);
+    border-radius:10px;
+}
+
+.load-note-button:hover{
+    background:rgba(56,119,208,.25);
+}
+
+.main-notes{
+    flex:1;
+    display:flex;
+    gap:18px;
+    overflow:hidden;
+}
+
+.savedNotes{
+    width:220px;
+    min-width:220px;
+    display:flex;
+    flex-direction:column;
+    border-radius:18px;
+    padding:15px;
+    overflow-y:auto;
+    background:rgba(255,255,255,.32);
+    border:1px solid rgba(0,0,0,.12);
+}
+
+.savedNotes h3{
+    margin-top:0;
+    margin-bottom:15px;
+    color:rgb(27,57,105);
+    text-align:center;
 }
 
 .calculator-display {
@@ -184,7 +327,7 @@
     margin-bottom: 12px;
     padding: 15px;
     min-height: 35px;
-    border: solid rgba(67, 118, 221, 0.8);
+    border: solid rgba(70, 74, 82, 0.35);
     border-radius: 15px;
     background-color: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(20px);
@@ -202,8 +345,8 @@
 
 .calc-button {
     padding: 14px 5px;
-    border: solid rgba(67, 118, 221, 0.8);
     border-radius: 12px;
+    border: none;
     background-color: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(20px);
     font-size: 18px;
@@ -252,9 +395,9 @@
     width: 100%;
     height: 100%;
     min-height: 400px;
-    overflow: auto;
+    overflow:auto;
     background-color: rgba(255, 255, 255, 0.1);
-    border: solid rgba(67, 118, 221, 0.8);
+    border: solid rgba(0, 0, 0, 0.1);
     border-radius: 15px;
 }
 
@@ -302,7 +445,7 @@
 
 .mapButton {
     padding: 8px 12px;
-    border: solid rgba(67, 118, 221, 0.8);
+    border:none;
     border-radius: 10px;
     background-color: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(20px);
@@ -322,7 +465,7 @@
   object-fit: contain;
   background: #b8e5f335;
   border-radius: 16px;
-  border: solid rgba(67, 118, 221, 0.8);
+  border: solid rgba(70, 74, 82, 0.35);
   margin-top: 10px;
 }
 
@@ -338,14 +481,15 @@
   font-size: 22px;
   padding: 5px 15px;
   cursor: pointer;
-  border: solid rgba(67, 118, 221, 0.8);
+  border: none;
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.45);
 }
 
 .galleryControls button:hover {
     background-color: rgba(41, 119, 208, 0.35);
-    transform: scale(1.04);
+    transform: scale(1.1);
+    transform: translateY(-2px);
 }
 
 .galleryContainer {
@@ -367,10 +511,12 @@
     padding: 10px;
     justify-content:space-between;
     align-content: center;
+    border: solid rgba(70, 74, 82, 0.35);
+    box-shadow:0 10px 35px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.15);
 }
 
 .paintCanvas {
-  border: solid rgba(67, 118, 221, 0.8);
+  border: solid rgba(70, 74, 82, 0.35);
   border-radius: 15px;
   background-color: rgb(255, 255, 255);
   backdrop-filter: blur(20px);
@@ -383,39 +529,309 @@
   align-items: center;
   gap: 15px;
   margin-top: 15px;
-  border: solid rgba(67, 118, 221, 0.8);
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: 15px;
+  padding: 8px;
+  background:rgba(255,255,255,.18);
+  box-shadow:0 10px 35px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.15);   
 }
 
 .paintButton {
-  font-size: 16px;
-  padding: 5px 10px;
-  cursor: pointer;
-  border: solid rgba(67, 118, 221, 0.8);
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.45);
-  width: 80px;
+    width:80px;
+    height:38px;
+    border:none;
+    border-radius:12px;
+    background:rgba(255,255,255,.3);
+    cursor:pointer;
+    transition:.2s;
 }
 
-.colorPicker {
-  width: 40px;
-  height: 40px;
-  border: solid rgba(67, 118, 221, 0.8);
-  border-radius: 15px;
-  cursor: pointer;
+.paintButton:hover {
+    background-color: rgba(41, 119, 208, 0.35);
+    transform: scale(1.04);
 }
 
-.brushSize {
-    width: 60px;
-    height: 40px;
-    border: solid rgba(67, 118, 221, 0.8);
-    border-radius: 5px;
-    cursor: pointer;
+.colorPickerButton{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:rgba(255,255,255,.28);
+    backdrop-filter:blur(18px);
+    border: 2px solid rgba(67,118,221,.8);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    transition:.2s;
+    box-shadow:0 8px 15px rgba(0,0,0,.15), inset 0 1px rgba(255,255,255,.45);
+}
+
+.colorPickerButton:hover {
+    transform: scale(1.04);
+}
+
+#colorPicker{
+    width:34px;
+    height:34px;
+    border:none;
+    padding:0;
+    background:none;
+    cursor:pointer;
+    border-radius:50%;
+}
+
+#colorPicker::-webkit-color-swatch-wrapper{
+    padding:0;
+}
+
+#colorPicker::-webkit-color-swatch{
+    border:none;
+    border-radius:50%;
+}
+
+.brushSize{
+    -webkit-appearance:none;
+    appearance:none;
+    width:120px;
+    height:8px;
+    border-radius:20px;
+    background:rgba(255,255,255,.25);
+    backdrop-filter:blur(15px);
+    outline:none;
+}
+
+.brushSize::-webkit-slider-runnable-track{
+    height:8px;
+    border-radius:20px;
+    background:
+        linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.75),
+            rgba(72, 86, 85, 0.75)
+        );
+}
+
+.brushSize::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:20px;
+    height:20px;
+    margin-top:-7px;
+    border-radius:50%;
+    background:white;
+    border: solid rgba(70, 74, 82, 0.8);
+    box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    cursor:pointer;
+    transition:.15s;
+}
+
+.brushSize::-webkit-slider-thumb:hover{
+    transform:scale(1.15);
 }
 
 .paintControlsGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 6px;
+}
+
+#quotes {
+    background: linear-gradient(
+        135deg,
+        rgba(20, 70, 170, 0.35),
+        rgba(40, 120, 255, 0.35),
+        rgba(40, 180, 255, 0.35),
+        rgba(25, 90, 210, 0.35),
+        rgba(20, 255, 255, 0.35),
+        rgba(40, 80, 255, 0.35),
+        rgba(20, 100, 255, 0.35),
+        rgba(10, 100, 240, 0.35),
+        rgba(20, 170, 170, 0.35),
+        rgba(79, 230, 220, 0.35),
+        rgba(11, 185, 212, 0.35),
+        rgba(20, 70, 170, 0.35),
+        rgba(40, 120, 255, 0.35),
+        rgba(40, 180, 255, 0.35),
+        rgba(25, 90, 210, 0.35),
+        rgba(20, 255, 255, 0.35),
+        rgba(40, 80, 255, 0.35),
+        rgba(20, 100, 255, 0.35),
+        rgba(10, 100, 240, 0.35),
+        rgba(20, 170, 170, 0.35),
+        rgba(79, 230, 220, 0.35),
+        rgba(11, 185, 212, 0.35)
+    );
+    background-size: 400% 400%;
+    animation: blueFlow 20s ease infinite;
+}
+
+@keyframes blueFlow {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+#welcomescreen {
+    background: linear-gradient(
+        135deg,
+        rgba(20, 70, 170, 0.35),
+        rgba(40, 120, 255, 0.35),
+        rgba(40, 180, 255, 0.35),
+        rgba(25, 90, 210, 0.35),
+        rgba(20, 255, 255, 0.35),
+        rgba(40, 80, 255, 0.35),
+        rgba(20, 100, 255, 0.35),
+        rgba(10, 100, 240, 0.35),
+        rgba(20, 170, 170, 0.35),
+        rgba(79, 230, 220, 0.35),
+        rgba(11, 185, 212, 0.35),
+        rgba(20, 70, 170, 0.35),
+        rgba(40, 120, 255, 0.35),
+        rgba(40, 180, 255, 0.35),
+        rgba(25, 90, 210, 0.35),
+        rgba(20, 255, 255, 0.35),
+        rgba(40, 80, 255, 0.35),
+        rgba(20, 100, 255, 0.35),
+        rgba(10, 100, 240, 0.35),
+        rgba(20, 170, 170, 0.35),
+        rgba(79, 230, 220, 0.35),
+        rgba(11, 185, 212, 0.35)
+    );
+    background-size: 400% 400%;
+    animation: welcomeFlow 20s ease infinite;
+}
+
+@keyframes welcomeFlow {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+.loadPaintWindow {
+    font-family: Georgia, serif;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    backdrop-filter: blur(25px);
+    background-color: rgba(255, 255, 255, 0.25);
+    border: solid;
+    width: 280px;
+    border-radius: 25px;
+    padding: 10px;
+    justify-content:space-between;
+    border: solid rgba(70, 74, 82, 0.35);
+    box-shadow:0 10px 35px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.15);
+}
+
+.load-painting-button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 15px;
+    border: solid rgba(1, 1, 1, 0.1);
+    background-color: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(20px);
+    font-size: 14px;
+    cursor: pointer;
+    color: rgb(27,57,105);
+}
+
+.load-painting-button:hover {
+    background-color: rgba(41, 119, 208, 0.35);
+    transform: scale(1.04);
+}
+
+.browserToolbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    background:rgba(255,255,255,.18);
+    backdrop-filter:blur(15px);
+    border-radius: 15px;
+    margin-top: 5px;
+    box-shadow:0 10px 35px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.15);   
+}
+
+.browserToolbar button{
+    width:38px;
+    height:38px;
+    border:none;
+    border-radius:12px;
+    background:rgba(255,255,255,.3);
+    cursor:pointer;
+    transition:.2s;
+}
+
+.browserToolbar button:hover{
+    background:rgba(255,255,255,.5);
+    transform:translateY(-2px);
+}
+
+#browserURL{
+    flex:1;
+    height:38px;
+    border:none;
+    border-radius:20px;
+    padding:0 15px;
+    font-size:15px;
+    background:rgba(255,255,255,.85);
+    outline:none;
+}
+
+#browserHome{
+    padding:30px;
+    text-align:center;
+}
+
+.browserShortcuts{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:25px;
+    margin-top:30px;
+}
+
+.browserShortcut{
+    padding:25px;
+    border-radius:20px;
+    background-color: rgba(56, 119, 208, 0.2);
+    backdrop-filter:blur(15px);
+    cursor:pointer;
+    transition:.2s;
+    font-size:40px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.browserShortcut:hover{
+    transform:translateY(-6px);
+    background:rgba(255,255,255,.35);
+}
+
+#browserFrame{
+    width:100%;
+    height:520px;
+    border:none;
+    display:none;
+    border-radius: 15px;
+    margin-top: 5px;
+}
+
+#browserHistory{
+    margin-top:20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    overflow: hidden;
+}
+
+.historyItem{
+    padding:12px;
+    border-radius:12px;
+    background:rgba(255,255,255,.15);
+    cursor:pointer;
+    transition:.2s;
+}
+
+.historyItem:hover{
+    background:rgba(255,255,255,.3);
 }
