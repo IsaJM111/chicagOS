@@ -7,57 +7,69 @@
     <h1 style="color: rgb(0, 0, 0)">
       <b>chicag<strong>OS</strong></b>
     </h1>
-    <p class="close-button" id="welcomeClose">X</p>
+    <p class="close-button" id="welcomeClose">🔴</p>
       </div>
       <div  id="welcomescreen" class="welcomescreen">
-        <h3 style="color: rgb(27, 57, 105)"> Welcome to ChicagOS! The perfect OS for a day in Chicago.</h3>
+        <h3 style="color: rgb(27, 57, 105)"> Welcome to chicagOS! The perfect OS for a day in Chicago.</h3>
       </div>
     </div>
 <!-- DEKTOP HEADER !-->
     <div class="desktopHeader">
-       <h1 id="welcomeOpen" style="cursor: pointer; justify-content: left;"> <b>chicagOS</b> </h1>
+       <h1 id="welcomeOpen" class="headerText"> <b>chicagOS</b> </h1>
        <div class="quote" id="quotes">'I miss everything about Chicago, except January and February.' —Gary Cole</div>
        <p id="timeElement" style="justify-content: right" class="clock"> ----------- </p>
     </div>
 <!-- APP ICONS SIDEBAR !-->
     <div id="desktopApps" class="apps"style="padding-top: 25px; padding-left: 15px;">
-      <div id="notesIcon" class="" style="text-align: center; width: fit-content; cursor: pointer;">
+      <div id="notesIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🗒️</div>
-        <p style="margin: 0; justify-content: center;">Notes</p>
       </div> 
-      <!-- <div id="mapIcon" class="" style="text-align: left; width: fit-content; cursor: pointer;">
+      <p style="margin: 0; justify-content: center;">Notes</p>
+      <div id="mapIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🗺️</div>
-        <p style="margin: 0; justify-content: center;">Mind Map</p>
-      </div> -->
-      <div id="calculatorIcon" class="" style="text-align: center; width: fit-content; cursor: pointer;">
+      </div>
+      <p style="margin: 0; justify-content: center;">Mind Map</p>
+      <div id="calculatorIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🧮</div>
-        <p style="margin: 0; justify-content: center;">Calculator</p>
       </div>
-      <div id="galleryIcon" class="" style="text-align: center; width: fit-content; cursor: pointer;">
+      <p style="margin: 0; justify-content: center;">Calculator</p>
+      <div id="galleryIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🖼️</div>
-        <p style="margin: 0; justify-content: center;">Gallery</p>
       </div>
-      <!--<div id="paintIcon" class="" style="text-align: center; width: fit-content; cursor: pointer;">
+      <p style="margin: 0; justify-content: center;">Gallery</p>
+      <div id="paintIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🎨</div>
-        <p style="margin: 0; justify-content: center;">Paint</p>
-      </div>-->
+      </div>
+      <p style="margin: 0; justify-content: center;">Paint</p>
+      <div id="browserIcon" class="desktopIcon">
+        <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🌐</div>
+      </div>
+      <p style="margin: 0; justify-content: center;">Browser</p>
     </div>
 <!-- NOTES WINDOW -->
-     <div id="notes" class="window" style="display: none">
-       <div class="header" id="notesheader">
-         <h1>Notes</h1>
-         <p class="close-button"; id="notesClose" style="backdrop-filter: blur(20px)">X</p>
-       </div>
-       <p class="noteButton"; id="newNote" style="backdrop-filter: blur(20px);"><strong>New Note +</strong></p>
-       <div id="notesContainer" class="notesContainer">
-            <div id="notesContainer"></div>
-       </div>
+    <div id="notes" class="window" style="display:none">
+      <div class="header" id="notesheader">
+        <h1>Notes</h1>
+        <p class="close-button" id="notesClose">🔴</p>
+      </div>
+      <div class="notesToolbar">
+        <button class="noteButton" id="newNote">
+            + New Note
+        </button>
+      </div>
+      <div class="main-notes">
+        <div class="savedNotes">
+            <h3>Saved Notes</h3>
+            <div id="notesList"></div>
+        </div>
+        <div id="notesContainer" class="notesContainer"></div>
+      </div>
     </div>
-<!-- MIND MAP WINDOW  
+<!-- MIND MAP WINDOW -->  
     <div id="mindMap" class="autoWindow" style="display: none">
        <div class="header" id="mindMapheader">
          <h1>Mind Map</h1>
-         <p class="close-button"; id="mindMapClose" style="backdrop-filter: blur(20px)">X</p>
+         <p class="close-button"; id="mindMapClose">🔴</p>
        </div>
        <div class="mindMapControls"> 
          <button class="mapButton" onclick="addChildNode()">Add Branch</button>
@@ -71,12 +83,11 @@
          </div>
        </div>
     </div> 
--->
 <!-- CALCULATOR APP WINDOW -->
     <div id="calculator" class="window" style="display: none; width: 300px">
       <div class="header" id="calculatorheader"> 
         <h1>Calculator</h1>
-        <p class="close-button"; id="calculatorClose" style="backdrop-filter: blur(20px)">X</p>
+        <p class="close-button"; id="calculatorClose">🔴</p>
       </div>
       <div class="calculator-display" id="calculatorDisplay">0</div>
       <div class="calculator-buttons">
@@ -102,10 +113,10 @@
       </div>
     </div>
 <!-- GALLERY APP WINDOW -->
-     <div id="gallery" class="window" style="display: none">
+    <div id="gallery" class="window" style="display: none">
        <div class="header" id="galleryheader">
          <h1>Gallery</h1>
-         <p class="close-button"; id="galleryClose" style="backdrop-filter: blur(20px)">X</p>
+         <p class="close-button"; id="galleryClose">🔴</p>
        </div>
        <div id="galleryContainer" class="gallery-container">
         <img id="galleryImage" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCM_d9SQ56xa8ccPT63FoBy0Jec32p7TRisgVzN3A0Qg&s=10" alt="Gallery photo">
@@ -116,14 +127,16 @@
         </div>
        </div>
     </div>
-<!-- PAINT WINDOW 
-     <div id="paint" class="paintwindow" style="display: none">
+<!-- PAINT WINDOW  -->
+    <div id="paint" class="paintwindow" style="display: none">
        <div class="header" id="paintheader">
          <h1>Paint</h1>
-         <p class="close-button"; id="paintClose" style="backdrop-filter: blur(20px)">X</p>
+         <p class="close-button"; id="paintClose">🔴</p>
        </div>
        <div class="paintControls">
-          <input class="colorPicker" type="color" id="colorPicker" value="#000000">
+          <div class="colorPickerButton" id="colorButton">
+            <input type="color" id="colorPicker" value="#000000">
+          </div>
           <label for="brushSize">Size:</label>
           <input class="brushSize" type="range" id="brushSize" min="1" max="50" value="5">
           <div class="paintControlsGrid">
@@ -134,14 +147,62 @@
           </div>
         </div>
        <div id="paintContainer" class="paint-container">
-          <canvas id="paintCanvas" class="paintCanvas" width="480" height="480"></canvas>
+          <canvas id="paintCanvas" class="paintCanvas" width="495" height="480"></canvas>
        </div>
     </div>
-  -->
+<!-- BROWSER WINDOW -->
+    <div id="browser" class="window" style="display:none; width:900px; height:650px;">
+      <div class="header" id="browserheader">
+        <h1>Browser</h1>
+        <p class="close-button" id="browserClose">🔴</p>
+      </div>
+      <div class="browserToolbar">
+        <button id="backButton">←</button>
+        <button id="forwardButton">→</button>
+        <button id="refreshButton">⟳</button>
+        <button id="homeButton">🏠</button>
+        <input id="browserURL"  type="text" placeholder="Search Google or enter website">
+        <button id="goButton">Go</button>
+      </div>
+      <div id="browserHome">
+        <h1>Welcome to ChicagOS Browser</h1>
+        <p>Search the web or choose a shortcut.</p>
+        <div class="browserShortcuts">
+            <div class="browserShortcut" data-url="https://www.wikipedia.org">
+              📚
+              <span>Wikipedia</span>
+            </div>
+            <div class="browserShortcut" data-url="https://www.weather.gov">
+              🌦
+              <span>Weather</span>
+            </div>
+            <div class="browserShortcut" data-url="https://www.chicago.gov">
+              🏙
+              <span>Chicago</span>
+            </div>
+            <div class="browserShortcut" data-url="https://maps.google.com">
+              🗺
+              <span>Maps</span>
+            </div>
+         </div>
+      </div>
+    <iframe id="browserFrame"></iframe>
+    <div id="browserBlocked" style="display:none; padding:40px; text-align:center;">
+      <h2>This website can't be displayed inside ChicagOS.</h2>
+      <p>Some websites block being opened inside another webpage. This error may also occur from a webpage loading to slowly, try reoading the page.</p>
+      <button id="openExternally">
+        Open in New Tab
+      </button>
+    </div>
+    </div>
+<!-- LOAD PAINT WINDOW -->
+    <div id = "loadPaintWindow" class="loadPaintWindow" style="display: none"> 
+      <div class="header"><h2>Saved Paintings</h2></div>
+      <div id="paintingList"></div>
+    </div>
 <!-- REFS -->
       <script src="script.js"></script>
      <link rel="stylesheet" type="text/css" href="style.css" />
    </body>
 </html>
-
-
+<!--Comment just for fun-->
