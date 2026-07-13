@@ -1,3 +1,4 @@
+
 /*
 var selectedIcon = undefined
 function selectIcon(notesIcon) {
@@ -39,6 +40,8 @@ dragElement(document.getElementById("mindMap"));
 dragElement(document.getElementById("calculator"));
 dragElement(document.getElementById("gallery"));
 dragElement(document.getElementById("paint"));
+dragElement(document.getElementById("browser"));
+dragElement(document.getElementById("loadPaintWindow"));
 
 function dragElement(element) {
 
@@ -103,12 +106,6 @@ var notesScreen = document.querySelector("#notes")
 var notesScreenClose = document.querySelector("#notesClose")
 var notesScreenOpen = document.querySelector("#notesIcon")
 
-function closeWindow(element) {
-  element.style.display = "none"
-}
-function openWindow(element) {
-  element.style.display = "block"
-}
 notesScreenClose.addEventListener("click", function() {
   closeWindow(notesScreen);
 });
@@ -122,12 +119,6 @@ var mindMapScreen = document.querySelector("#mindMap")
 var mindMapScreenClose = document.querySelector("#mindMapClose")
 var mindMapScreenOpen = document.querySelector("#mapIcon")
 
-function closeWindow(element) {
-  element.style.display = "none"
-}
-function openWindow(element) {
-  element.style.display = "block"
-}
 mindMapScreenClose.addEventListener("click", function() {
   closeWindow(mindMapScreen);
 });
@@ -140,30 +131,67 @@ mindMapScreenOpen.addEventListener("click", function() {
 const notesContainer = document.querySelector("#notesContainer");
 const notesContainerNew = document.querySelector("#newNote");
 
-function createNote() {
+function createNote(text = "") {
   const note = document.createElement("div");
   note.classList.add("note");
   const deleteButton = document.createElement("button");
   deleteButton.classList.add("delete-note");
-  deleteButton.textContent = "X";
-  deleteButton.setAttribute("aria-label", "Delete note");
+  deleteButton.textContent = "✕";
+  deleteButton.style.marginTop = "8px";
+  const saveButton = document.createElement("button");
+  saveButton.className = "save-note";
+  saveButton.style.marginTop = "8px";
+  saveButton.textContent = "💾";
   const noteInput = document.createElement("div");
   noteInput.classList.add("note-input");
   noteInput.contentEditable = "true";
-  noteInput.setAttribute("data-placeholder", "Type your note here...");
-  deleteButton.addEventListener("click", () => {
-    note.remove();
-  });
+  noteInput.setAttribute("data-placeholder","Type your note here...");
+  noteInput.innerHTML = text;
+  deleteButton.onclick = () => note.remove();
+  saveButton.onclick = () => {saveNote(noteInput.innerHTML);};
   note.appendChild(deleteButton);
   note.appendChild(noteInput);
+  note.appendChild(saveButton);
   notesContainer.appendChild(note);
   noteInput.focus();
 }
 
 notesContainerNew.addEventListener("click", () => {
-  notesContainer.style.display = "flex";
   createNote();
 });
+
+function saveNote(content) {
+    let name = prompt("Name this note:");
+    if(name === null) return;
+    name = name.trim();
+    if(name === "")
+        name = "Untitled";
+    const notes = JSON.parse(localStorage.getItem("notes")) || [];
+    notes.push({name: name, content: content});
+    localStorage.setItem("notes", JSON.stringify(notes));
+    updateNotes();
+}
+
+function updateNotes(){
+  const notes = JSON.parse(localStorage.getItem("notes")) || [];
+  const list = document.getElementById("notesList");
+  list.innerHTML = "";
+  notes.forEach((note,index)=>{
+    const button =document.createElement("button");
+    button.textContent = note.name;
+    button.className = "load-note-button";
+    button.onclick = () => {loadNote(index);};
+      list.appendChild(button);
+  });
+}
+
+function loadNote(index){
+  const notes = JSON.parse(localStorage.getItem("notes")) || [];
+  createNote(notes[index].content);
+}
+
+createNote();
+updateNotes();
 
 // Calc app open
 
@@ -307,11 +335,6 @@ function drawMindMapLines() {
     line.setAttribute("stroke-width", "3");
     svg.appendChild(line);
   });
-  console.log(
-    "Node:", node.id,
-    "Parent:", node.parent,
-    "Parent exists:", nodes[node.parent]
-  );
 }
 
 function deleteSelectedNode() {
@@ -351,6 +374,7 @@ function clearAllNodes() {
 }
 
 selectNode(0);
+drawMindMapLines();
 
 // GALLERY APP OPEN & MAIN CODE
 
@@ -410,13 +434,6 @@ var paintScreen = document.querySelector("#paint")
 var paintScreenClose = document.querySelector("#paintClose")
 var paintScreenOpen = document.querySelector("#paintIcon")
 
-function closeWindow(element) {
-  element.style.display = "none"
-}
-function openWindow(element) {
-  element.style.display = "block"
-}
-
 paintScreenClose.addEventListener("click", function() {
   closeWindow(paintScreen);
 });
@@ -426,9 +443,117 @@ paintScreenOpen.addEventListener("click", function() {
 
 // PAINT APP MAIN CODE
 
+
 const canvas = document.getElementById("paintCanvas");
 const ctx = canvas.getContext("2d");
 let painting = false;
+let erasing = false;
+
+function toggleEraser() {
+   if (erasing === false) {
+    erasing = true; 
+    eraserButton.style.backgroundColor = "rgba(100, 100, 200, 0.5)";
+   } else {
+    erasing = false;
+    eraserButton.style.backgroundColor = "";
+   };
+};
+
+canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mouseup", stopDraw);
+canvas.addEventListener("mouseleave", stopDraw);
+canvas.addEventListener("mousemove", draw);
+
+function startDraw(e) {
+  painting = true;
+  ctx.beginPath();
+  ctx.moveTo(e.offsetX, e.offsetY);
+};
+
+function stopDraw() {
+  painting = false;
+};
+
+function draw(e) {
+  if (!painting) return;
+  if (erasing === true) {
+    ctx.strokeStyle = "white";
+  } else {
+    ctx.strokeStyle = document.getElementById("colorPicker").value;
+  };
+  ctx.lineWidth = document.getElementById("brushSize").value;
+  ctx.lineCap = "round";
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.stroke();
+};
+
+const picker = document.getElementById("colorPicker");
+const button = document.getElementById("colorButton");
+
+function updatePicker(){
+  button.style.boxShadow = `0 0 20px ${picker.value}55, 0 6px 15px rgba(0,0,0,.15), inset 0 1px rgba(255,255,255,.45)`;
+  button.style.borderColor = picker.value;
+}
+
+picker.addEventListener("input",updatePicker);
+updatePicker();
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+};
+
+function saveCanvas() {
+    let name = prompt("Enter a name for your painting:");
+    if (name === null) return;
+    name = name.trim();
+    if (name === "") {
+        name = "Untitled";
+    }
+    const image = canvas.toDataURL("image/png");
+    const paintings =
+        JSON.parse(localStorage.getItem("paintings")) || [];
+    paintings.push({
+        name: name,
+        image: image
+    });
+    localStorage.setItem(
+        "paintings",
+        JSON.stringify(paintings)
+    );
+}
+
+function loadCanvas() {
+    const paintings =
+        JSON.parse(localStorage.getItem("paintings")) || [];
+    const list = document.getElementById("paintingList");
+    list.innerHTML = "";
+    paintings.forEach((painting,index)=>{
+        const button = document.createElement("button");
+        button.textContent = painting.name;
+        button.classList.add("load-painting-button");
+        button.onclick = ()=>{
+            loadPainting(index);
+            closeWindow(document.getElementById("loadPaintWindow"));
+        };
+        list.appendChild(button);
+    });
+    if (document.getElementById("loadPaintWindow").style.display === "none") {
+        openWindow(document.getElementById("loadPaintWindow"));
+    } else {
+        closeWindow(document.getElementById("loadPaintWindow"));
+    }
+};
+
+function loadPainting(index){
+    const paintings =
+        JSON.parse(localStorage.getItem("paintings"));
+    const image = new Image();
+    image.onload = function(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(image,0,0);
+    };
+    image.src = paintings[index].image;
+}
 
 // QUOTES MAIN CODE
 
@@ -452,3 +577,131 @@ function cycleQuotes() {
   quoteElement.textContent = quotes[nextQuoteIndex];
 }
 setInterval(cycleQuotes, 50000);
+
+// BROWSER APP OPEN
+
+var browserScreen = document.querySelector("#browser")
+var browserScreenClose = document.querySelector("#browserClose")
+var browserScreenOpen = document.querySelector("#browserIcon")
+
+browserScreenClose.addEventListener("click", function() {
+  closeWindow(browserScreen);
+});
+browserScreenOpen.addEventListener("click", function() {
+  openWindow(browserScreen);
+});
+
+// BROWSER APP MAIN CODE
+
+const browserFrame = document.getElementById("browserFrame");
+const browserHome = document.getElementById("browserHome");
+const browserURL = document.getElementById("browserURL");
+let browserHistory = JSON.parse(localStorage.getItem("browserHistory")) || [];
+let currentHistory = -1;
+
+document.querySelectorAll(".browserShortcut")
+.forEach(shortcut=>{
+    shortcut.onclick=function(){
+        browserURL.value=this.dataset.url;
+        goWebsite();
+    };
+});
+
+browserURL.addEventListener("keydown",function(e){
+  if(e.key==="Enter"){goWebsite();}
+});
+
+let loadTimeout;
+
+function goWebsite(){
+    let text = browserURL.value.trim();
+    if(text==="") return;
+    let url;
+    if(text.includes(".")){
+        if(!text.startsWith("http")){
+            url="https://"+text;
+        } else {
+            url=text;
+        }
+    } else  {
+        url=
+        "https://www.google.com/search?q="+
+        encodeURIComponent(text);
+    }
+    browserFrame.src=url;
+    browserFrame.style.display="block";
+    browserHome.style.display="none";
+    browserHistory.push(url);
+    currentHistory=
+    browserHistory.length-1;
+    localStorage.setItem(
+        "browserHistory",
+        JSON.stringify(browserHistory)
+    );
+    updateBrowserHistory();
+    browserBlocked.style.display="none";
+    clearTimeout(loadTimeout);
+    loadTimeout=setTimeout(function(){
+        browserFrame.style.display="none";
+        browserBlocked.style.display="block";
+    },3000);
+    document.getElementById("openExternally")
+    .onclick=function(){
+    window.open(browserFrame.src,"_blank");
+  };
+}
+
+browserFrame.onload=function(){
+    clearTimeout(loadTimeout);
+};
+
+function updateBrowserHistory() {
+  const historyDiv = document.getElementById("browserHistory");
+  historyDiv.innerHTML = "";
+  browserHistory.slice().reverse().slice(0,8).forEach(url => {
+    const item = document.createElement("div");
+    item.className="historyItem";
+    item.textContent = url;
+    item.onclick = function() {
+      browserURL.value = url;
+      goWebsite();
+    };
+    historyDiv.appendChild(item);
+  });
+}
+
+document.getElementById("homeButton")
+.onclick=function(){
+    browserFrame.style.display="none";
+    browserHome.style.display="block";
+};
+
+document.getElementById("refreshButton")
+.onclick=function(){
+    browserFrame.src = browserFrame.src;
+};
+
+document.getElementById("backButton")
+.onclick=function(){
+    if(currentHistory>0){
+        currentHistory--;
+        browserFrame.src=
+        browserHistory[currentHistory];
+        browserURL.value=
+        browserHistory[currentHistory];
+    }
+};
+
+document.getElementById("forwardButton")
+.onclick=function(){
+    if(currentHistory<
+        browserHistory.length-1){
+        currentHistory++;
+        browserFrame.src=
+        browserHistory[currentHistory];
+        browserURL.value=
+        browserHistory[currentHistory];
+    }
+};
+
+updateBrowserHistory();
