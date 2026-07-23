@@ -1,3 +1,4 @@
+let highestZ = 100;
 
 /*
 var selectedIcon = undefined
@@ -23,6 +24,87 @@ notesIcon.addEventListener("click", function() {
 });
 */
 
+//DYNAMIC BACKGROUND
+
+const stars=document.getElementById("stars");
+for(let i=0;i<120;i++){
+    const star=document.createElement("div");
+    star.className="star";
+    star.style.left=Math.random()*100+"vw";
+    star.style.top=Math.random()*65+"vh";
+    star.style.animationDelay=Math.random()*5+"s";
+    stars.appendChild(star);
+}
+
+document.addEventListener("mousemove",(e)=>{
+    const x=(e.clientX/window.innerWidth-.5);
+    const y=(e.clientY/window.innerHeight-.5);
+    document.getElementById("clouds").style.transform=
+    `translate(${x*25}px,${y*15}px)`;
+    document.getElementById("skyline").style.transform=
+    `translate(${x*12}px,${y*8}px)`;
+    document.getElementById("lake").style.transform=
+    `translate(${x*6}px,${y*3}px)`;
+});
+
+// SETTINGS APP OPEN AND MAIN CODE
+
+document.getElementById("settingsButton").addEventListener("click",()=>{
+  openWindow(document.getElementById("settings"));
+});
+
+document.getElementById("settingsClose").onclick=()=>{
+  closeWindow(document.getElementById("settings"));
+};
+
+function setWallpaper(type){
+    const background=
+    document.getElementById("background");
+    if(type==="classic"){
+        background.style.backgroundImage=
+        "url('https://images.squarespace-cdn.com/content/v1/55664553e4b0e48846329dc0/1513810378697-SE401H22HUNY98E30669/samples.jpg')";
+        sky.style.display="none";
+        clouds.style.display="none";
+        skyline.style.display="none";
+        lake.style.display="none";
+        stars.style.display="none";
+    }
+    else{
+        background.style.backgroundImage="none";
+        sky.style.display="";
+        clouds.style.display="";
+        skyline.style.display="";
+        lake.style.display="";
+        stars.style.display="";
+    }
+}
+
+document.querySelectorAll('input[name="wallpaper"]').forEach(button=>{
+  button.addEventListener(
+    "change",
+    function(){
+      setWallpaper(this.value);
+      localStorage.setItem("wallpaper",this.value);
+    }
+  );
+});
+
+const savedWallpaper = localStorage.getItem("wallpaper") || "classic";
+setWallpaper(savedWallpaper);
+document.querySelector(
+`input[value="${savedWallpaper}"]`
+).checked=true;
+
+const quotetoggle = document.getElementById('toggle');
+const quote = document.getElementById('quotes');
+quotetoggle.addEventListener('change', function() {
+  if (this.checked) {
+    quote.style.display = "block"
+  } else {
+    quote.style.display = "none"
+  }
+});
+
 // Clock
 
 function updateTime() {
@@ -42,6 +124,8 @@ dragElement(document.getElementById("gallery"));
 dragElement(document.getElementById("paint"));
 dragElement(document.getElementById("browser"));
 dragElement(document.getElementById("loadPaintWindow"));
+dragElement(document.getElementById("settings"));
+dragElement(document.getElementById("quotes"));
 
 function dragElement(element) {
 
@@ -80,7 +164,7 @@ function dragElement(element) {
   }
 }
 
-// Welcome Screen
+// WELCOME SCREEN OPEN
 
 var welcomeScreen = document.querySelector("#welcome")
 var welcomeScreenClose = document.querySelector("#welcomeClose")
@@ -89,8 +173,11 @@ var welcomeScreenOpen = document.querySelector("#welcomeOpen")
 function closeWindow(element) {
   element.style.display = "none"
 }
-function openWindow(element) {
-  element.style.display = "block"
+
+function openWindow(element){
+    if(document.body.contains(element)){
+        element.style.display="block";
+    }
 }
 
 welcomeScreenClose.addEventListener("click", function() {
@@ -100,11 +187,12 @@ welcomeScreenOpen.addEventListener("click", function() {
   openWindow(welcomeScreen);
 });
 
-// Notes app open
+// NOTES APP OPEN
 
 var notesScreen = document.querySelector("#notes")
 var notesScreenClose = document.querySelector("#notesClose")
 var notesScreenOpen = document.querySelector("#notesIcon")
+var notesDockOpen = document.querySelector("#notesDockIcon")
 
 notesScreenClose.addEventListener("click", function() {
   closeWindow(notesScreen);
@@ -112,12 +200,16 @@ notesScreenClose.addEventListener("click", function() {
 notesScreenOpen.addEventListener("click", function() {
   openWindow(notesScreen);
 });
+notesDockOpen.addEventListener("click", function() {
+  openWindow(notesScreen);
+});
 
-// Mind Map app open
+// MIND MAP APP OPEN
 
 var mindMapScreen = document.querySelector("#mindMap")
 var mindMapScreenClose = document.querySelector("#mindMapClose")
 var mindMapScreenOpen = document.querySelector("#mapIcon")
+var mapDockOpen = document.querySelector("#mapDockIcon")
 
 mindMapScreenClose.addEventListener("click", function() {
   closeWindow(mindMapScreen);
@@ -125,8 +217,11 @@ mindMapScreenClose.addEventListener("click", function() {
 mindMapScreenOpen.addEventListener("click", function() {
   openWindow(mindMapScreen);
 });
+mapDockOpen.addEventListener("click", function() {
+  openWindow(mindMapScreen);
+});
 
-// Notes main code
+// NOTES MAiN CODE
 
 const notesContainer = document.querySelector("#notesContainer");
 const notesContainerNew = document.querySelector("#newNote");
@@ -172,17 +267,35 @@ function saveNote(content) {
     updateNotes();
 }
 
-function updateNotes(){
+function updateNotes() {
   const notes = JSON.parse(localStorage.getItem("notes")) || [];
   const list = document.getElementById("notesList");
   list.innerHTML = "";
-  notes.forEach((note,index)=>{
-    const button =document.createElement("button");
-    button.textContent = note.name;
+  notes.forEach((note, index) => {
+    const row = document.createElement("div");
+    row.className = "saved-note-row";
+    const button = document.createElement("button");
     button.className = "load-note-button";
+    button.textContent = note.name;
     button.onclick = () => {loadNote(index);};
-      list.appendChild(button);
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "delete-saved-note-button";
+    deleteButton.textContent = "✕";
+    deleteButton.onclick = (e) => {
+      e.stopPropagation();
+      deleteSavedNote(index);
+    };
+    row.appendChild(button);
+    row.appendChild(deleteButton);
+    list.appendChild(row);
   });
+}
+
+function deleteSavedNote(index){
+  const notes = JSON.parse(localStorage.getItem("notes")) || [];
+  notes.splice(index, 1);
+  localStorage.setItem("notes", JSON.stringify(notes));
+  updateNotes();
 }
 
 function loadNote(index){
@@ -193,11 +306,12 @@ function loadNote(index){
 createNote();
 updateNotes();
 
-// Calc app open
+// CALC APP OPEN
 
 var calculatorScreen = document.querySelector("#calculator")
 var calculatorScreenClose = document.querySelector("#calculatorClose")
 var calculatorScreenOpen = document.querySelector("#calculatorIcon")
+var calculatorDockOpen = document.querySelector("#calculatorDockIcon")
 
 calculatorScreenClose.addEventListener("click", function() {
   closeWindow(calculatorScreen);
@@ -205,8 +319,11 @@ calculatorScreenClose.addEventListener("click", function() {
 calculatorScreenOpen.addEventListener("click", function() {
   openWindow(calculatorScreen);
 });
+calculatorDockOpen.addEventListener("click", function() {
+  openWindow(calculatorScreen);
+});
 
-// Calc app main code
+// CALC APP MAIN CODE
 
 function calculator(value) {
   let display = document.getElementById("calculatorDisplay");
@@ -234,10 +351,27 @@ function calculate() {
   }
 }
 
-// MIND MAPP APP MAIN CODE
+// MIND MAP APP MAIN CODE
 
 let selectedNodeId = 0;
 let nextNodeId = 1;
+let zoom = 1;
+const MIN_ZOOM = 0.45;
+const MAX_ZOOM = 3;
+const mindMapArea = document.getElementById("mindMapArea");
+const mindMapCanvas = document.getElementById("mindMapCanvas");
+
+mindMapArea.addEventListener("wheel", function(e){
+    e.preventDefault();
+    if(e.deltaY < 0){
+        zoom += 0.1;
+    }else{
+        zoom -= 0.1;
+    }
+    zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom));
+    mindMapCanvas.style.transform =
+        `scale(${zoom})`;
+},{passive:false});
 
 const nodes = {
   0: {
@@ -290,27 +424,31 @@ function addChildNode() {
   newNode.onclick = function() {
     selectNode(newId);
   };
-  document.getElementById("mindMapArea").appendChild(newNode);
-  rearrangeChildren(selectedNodeId);
+  document.getElementById("mindMapCanvas").appendChild(newNode);
+  rearrangeChildren(0);
   drawMindMapLines();
   selectNode(newId);
+  makeNodeDraggable(newNode, newId);
 }
 
 function rearrangeChildren(parentId) {
   const parent = nodes[parentId];
-  const childIds = parent.children;
+  if (!parent) return;
   const spacing = 105;
+  const childIds = parent.children;
   const startY = parent.y - ((childIds.length - 1) * spacing) / 2;
   childIds.forEach((childId, index) => {
     const child = nodes[childId];
+    if (!child) return;
     child.x = parent.x + 230;
-    child.y = startY + (index * spacing);
-    const childElement = document.getElementById("node-" + childId);
-    childElement.style.left = child.x + "px";
-    childElement.style.top = child.y + "px";
+    child.y = startY + index * spacing;
+    const element = document.getElementById("node-" + childId);
+    if (element) {
+      element.style.left = child.x + "px";
+      element.style.top = child.y + "px";
+    }
     rearrangeChildren(childId);
   });
-  drawMindMapLines();
 }
 
 function drawMindMapLines() {
@@ -318,11 +456,13 @@ function drawMindMapLines() {
   svg.innerHTML = "";
   Object.values(nodes).forEach(node => {
     if (node.parent === null) return;
-    const parent = nodes[node.parent];
-    const startX = parent.x + 150;
-    const startY = parent.y + 28;
-    const endX = node.x;
-    const endY = node.y + 28;
+    const parentElement = document.getElementById("node-" + node.parent);
+    const childElement = document.getElementById("node-" + node.id);
+    if (!parentElement || !childElement) return;
+    const startX = parentElement.offsetLeft + parentElement.offsetWidth;
+    const startY = parentElement.offsetTop + parentElement.offsetHeight / 2;
+    const endX = childElement.offsetLeft;
+    const endY = childElement.offsetTop + childElement.offsetHeight / 2;
     const line = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "line"
@@ -343,6 +483,7 @@ function deleteSelectedNode() {
     return;
   }
   deleteNodeAndChildren(selectedNodeId);
+  rearrangeChildren(0);
   selectedNodeId = 0;
   selectNode(0);
   drawMindMapLines();
@@ -373,7 +514,31 @@ function clearAllNodes() {
   drawMindMapLines();
 }
 
+function makeNodeDraggable(element, id) {
+  let dragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+  element.addEventListener("mousedown", function(e){
+    if(e.target.tagName === "INPUT") return;
+    dragging = true;
+    offsetX = e.clientX - nodes[id].x;
+    offsetY = e.clientY - nodes[id].y;
+    selectNode(id);
+    e.preventDefault();
+  });
+  document.addEventListener("mousemove", function(e){
+    if(!dragging) return;
+    nodes[id].x = e.clientX - offsetX;
+    nodes[id].y = e.clientY - offsetY;
+    element.style.left = nodes[id].x + "px";
+    element.style.top = nodes[id].y + "px";
+    drawMindMapLines();
+  });
+  document.addEventListener("mouseup", function(){dragging = false;});
+}
+
 selectNode(0);
+makeNodeDraggable(document.getElementById("node-0"), 0);
 drawMindMapLines();
 
 // GALLERY APP OPEN & MAIN CODE
@@ -381,11 +546,15 @@ drawMindMapLines();
 var galleryScreen = document.querySelector("#gallery")
 var galleryScreenClose = document.querySelector("#galleryClose")
 var galleryScreenOpen = document.querySelector("#galleryIcon")
+var galleryDockOpen = document.querySelector("#galleryDockIcon")
 
 galleryScreenClose.addEventListener("click", function() {
   closeWindow(galleryScreen);
 });
 galleryScreenOpen.addEventListener("click", function() {
+  openWindow(galleryScreen);
+});     
+galleryDockOpen.addEventListener("click", function() {
   openWindow(galleryScreen);
 });     
 
@@ -433,16 +602,21 @@ function previousPhoto() {
 var paintScreen = document.querySelector("#paint")
 var paintScreenClose = document.querySelector("#paintClose")
 var paintScreenOpen = document.querySelector("#paintIcon")
+var loadPaint = document.querySelector("#loadPaintWindow")
+var paintDockOpen = document.querySelector("#paintDockIcon")
 
 paintScreenClose.addEventListener("click", function() {
   closeWindow(paintScreen);
+  closeWindow(loadPaint);
 });
 paintScreenOpen.addEventListener("click", function() {
   openWindow(paintScreen);
 });
+paintDockOpen.addEventListener("click", function() {
+  openWindow(paintScreen);
+});
 
 // PAINT APP MAIN CODE
-
 
 const canvas = document.getElementById("paintCanvas");
 const ctx = canvas.getContext("2d");
@@ -583,11 +757,15 @@ setInterval(cycleQuotes, 50000);
 var browserScreen = document.querySelector("#browser")
 var browserScreenClose = document.querySelector("#browserClose")
 var browserScreenOpen = document.querySelector("#browserIcon")
+var browserDockOpen = document.querySelector("#browserDockIcon")
 
 browserScreenClose.addEventListener("click", function() {
   closeWindow(browserScreen);
 });
 browserScreenOpen.addEventListener("click", function() {
+  openWindow(browserScreen);
+});
+browserDockOpen.addEventListener("click", function() {
   openWindow(browserScreen);
 });
 
@@ -656,8 +834,6 @@ browserFrame.onload=function(){
 };
 
 function updateBrowserHistory() {
-  const historyDiv = document.getElementById("browserHistory");
-  historyDiv.innerHTML = "";
   browserHistory.slice().reverse().slice(0,8).forEach(url => {
     const item = document.createElement("div");
     item.className="historyItem";
@@ -666,7 +842,6 @@ function updateBrowserHistory() {
       browserURL.value = url;
       goWebsite();
     };
-    historyDiv.appendChild(item);
   });
 }
 
@@ -705,3 +880,14 @@ document.getElementById("forwardButton")
 };
 
 updateBrowserHistory();
+
+document.querySelectorAll(
+".window,.paintwindow,.autoWindow"
+).forEach(window=>{
+    window.addEventListener("mousedown",()=>{
+        highestZ++;
+        window.style.zIndex=highestZ;
+    });
+});
+
+//COMMENT JUST FOR FUN
