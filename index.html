@@ -1,23 +1,47 @@
 <!DOCTYPE html>
 <html>
   <body class="background">
+    <div id="background">
+      <div id="sky"></div>
+      <div id="stars"></div>
+      <div id="clouds">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+      </div>
+      <div id="lake"></div>
+      <div id="skyline"></div>
+      <div id="particles"></div>
+    </div>
+    <div id="desktop"> 
 <!-- WELCOME SCREEN !-->
     <div id="welcome" class="window">
       <div id="welcomeheader" class="header">
-    <h1 style="color: rgb(0, 0, 0)">
-      <b>chicag<strong>OS</strong></b>
-    </h1>
-    <p class="close-button" id="welcomeClose">🔴</p>
+        <h1 style="color: rgb(0, 0, 0)"><b>chicag<strong>OS</strong></b></h1>
+        <div class="windowControls">
+          <button class="close-button" id="welcomeClose">🔴</button>
+        </div>
       </div>
       <div  id="welcomescreen" class="welcomescreen">
         <h3 style="color: rgb(27, 57, 105)"> Welcome to chicagOS! The perfect OS for a day in Chicago.</h3>
       </div>
     </div>
-<!-- DEKTOP HEADER !-->
-    <div class="desktopHeader">
+<!-- DOCK !-->
+    <div class="dock">
        <h1 id="welcomeOpen" class="headerText"> <b>chicagOS</b> </h1>
-       <div class="quote" id="quotes">'I miss everything about Chicago, except January and February.' —Gary Cole</div>
-       <p id="timeElement" style="justify-content: right" class="clock"> ----------- </p>
+       <div class="dockAppIcons">
+          <div id="notesDockIcon" class="dockIcon">🗒️</div> 
+          <div id="mapDockIcon" class="dockIcon">🗺️</div>
+          <div id="calculatorDockIcon" class="dockIcon">🧮</div>
+          <div id="galleryDockIcon" class="dockIcon">🖼️</div>
+          <div id="paintDockIcon" class="dockIcon">🎨</div>
+          <div id="browserDockIcon" class="dockIcon">🌐</div>
+       </div>
+       <div class="headerRight">
+        <button id="settingsButton"> ⚙️</button>
+         <p id="timeElement" style="justify-content: right" class="clock"> ----------- </p>
+      </div>
     </div>
 <!-- APP ICONS SIDEBAR !-->
     <div id="desktopApps" class="apps"style="padding-top: 25px; padding-left: 15px;">
@@ -46,11 +70,47 @@
       </div>
       <p style="margin: 0; justify-content: center;">Browser</p>
     </div>
+<!-- QUOTES -->
+    <div class="quote" id="quotes">'I miss everything about Chicago, except January and February.' —Gary Cole</div>
+<!--SETTINGS WINDOW-->
+<div id="settings" class="window" style="display:none; width:340px;">
+    <div class="header" id="settingsheader">
+      <h1>Settings</h1>
+      <div class="windowControls">
+        <button class="close-button" id="settingsClose">🔴</button>
+      </div>
+    </div>
+    <div class="settingsContent">
+      <div class="wallpaperSettings">
+        <h3>Wallpaper</h3>
+        <label class="wallpaperCard">
+          <input class="wallpaperChoice" type="radio"name="wallpaper"value="classic"checked>
+          <div><strong>Classic Chicago</strong></div>
+        </label>
+        <label class="wallpaperCard">
+          <input class="wallpaperChoice"type="radio"name="wallpaper"value="dynamic">
+          <div><strong>Dynamic Chicago</strong></div>
+        </label>
+      </div>
+      <div class="quotesSettings">
+        <h3>Quotes</h3>
+        <div class="quoteswitch">
+          <label class="switch">
+            <input type="checkbox" id="toggle"checked>
+            <span class="slider"></span>
+          </label>
+          <div><strong>Toggle Quotes</strong></div>
+        </div>
+      </div>
+    </div>
+</div>
 <!-- NOTES WINDOW -->
     <div id="notes" class="window" style="display:none">
       <div class="header" id="notesheader">
         <h1>Notes</h1>
-        <p class="close-button" id="notesClose">🔴</p>
+        <div class="windowControls">
+          <button class="close-button" id="notesClose">🔴</button>
+        </div>
       </div>
       <div class="notesToolbar">
         <button class="noteButton" id="newNote">
@@ -69,7 +129,9 @@
     <div id="mindMap" class="autoWindow" style="display: none">
        <div class="header" id="mindMapheader">
          <h1>Mind Map</h1>
-         <p class="close-button"; id="mindMapClose">🔴</p>
+        <div class="windowControls">
+          <button class="close-button" id="mindMapClose">🔴</button>
+        </div>
        </div>
        <div class="mindMapControls"> 
          <button class="mapButton" onclick="addChildNode()">Add Branch</button>
@@ -77,17 +139,21 @@
          <button class="mapButton" onclick="clearAllNodes()">Clear All</button>
        </div>
        <div id="mindMapArea">
-         <svg id="mindMapLines"></svg>
-         <div class = "mind-node root-node" id="node-0" onclick="selectNode(0)">
-          <input type="text" value="Main Idea" onclick="event.stopPropagation()">
-         </div>
-       </div>
+        <div id="mindMapCanvas">
+          <svg id="mindMapLines"></svg>
+          <div class="mind-node root-node" id="node-0" onclick="selectNode(0)">
+            <input type="text" value="Main Idea" onclick="event.stopPropagation()">
+          </div>
+        </div>
+      </div>
     </div> 
 <!-- CALCULATOR APP WINDOW -->
     <div id="calculator" class="window" style="display: none; width: 300px">
       <div class="header" id="calculatorheader"> 
         <h1>Calculator</h1>
-        <p class="close-button"; id="calculatorClose">🔴</p>
+        <div class="windowControls">
+          <button class="close-button" id="calculatorClose">🔴</button>
+        </div>
       </div>
       <div class="calculator-display" id="calculatorDisplay">0</div>
       <div class="calculator-buttons">
@@ -116,7 +182,9 @@
     <div id="gallery" class="window" style="display: none">
        <div class="header" id="galleryheader">
          <h1>Gallery</h1>
-         <p class="close-button"; id="galleryClose">🔴</p>
+        <div class="windowControls">
+          <button class="close-button" id="galleryClose">🔴</button>
+        </div>
        </div>
        <div id="galleryContainer" class="gallery-container">
         <img id="galleryImage" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCM_d9SQ56xa8ccPT63FoBy0Jec32p7TRisgVzN3A0Qg&s=10" alt="Gallery photo">
@@ -131,7 +199,9 @@
     <div id="paint" class="paintwindow" style="display: none">
        <div class="header" id="paintheader">
          <h1>Paint</h1>
-         <p class="close-button"; id="paintClose">🔴</p>
+        <div class="windowControls">
+          <button class="close-button" id="paintClose">🔴</button>
+        </div>
        </div>
        <div class="paintControls">
           <div class="colorPickerButton" id="colorButton">
@@ -154,7 +224,9 @@
     <div id="browser" class="window" style="display:none; width:900px; height:650px;">
       <div class="header" id="browserheader">
         <h1>Browser</h1>
-        <p class="close-button" id="browserClose">🔴</p>
+        <div class="windowControls">
+          <button class="close-button" id="browserClose">🔴</button>
+        </div>
       </div>
       <div class="browserToolbar">
         <button id="backButton">←</button>
@@ -200,9 +272,10 @@
       <div class="header"><h2>Saved Paintings</h2></div>
       <div id="paintingList"></div>
     </div>
+    </div>
 <!-- REFS -->
-      <script src="script.js"></script>
-     <link rel="stylesheet" type="text/css" href="style.css" />
-   </body>
+    <script src="script.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </body>
 </html>
-<!--Comment just for fun-->
+<!--Comment just for fun--> 
