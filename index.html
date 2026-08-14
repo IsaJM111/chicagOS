@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <body class="background">
-    <div id="background">
+    <div id="background"> <!--BACKGROUND-->
       <div id="sky"></div>
       <div id="stars"></div>
       <div id="clouds">
@@ -14,7 +14,7 @@
       <div id="skyline"></div>
       <div id="particles"></div>
     </div>
-    <div id="desktop"> 
+    <div id="desktop"> <!--DESKTOP-->
 <!-- WELCOME SCREEN !-->
     <div id="welcome" class="window">
       <div id="welcomeheader" class="header">
@@ -37,43 +37,78 @@
           <div id="galleryDockIcon" class="dockIcon">🖼️</div>
           <div id="paintDockIcon" class="dockIcon">🎨</div>
           <div id="browserDockIcon" class="dockIcon">🌐</div>
+          <div id="terminalDockIcon" class="dockIcon">💻</div>
+          <div id="filesDockIcon" class="dockIcon">📁</div>
+          <div id="musicDockIcon" class="dockIcon">🎶</div>
        </div>
        <div class="headerRight">
         <button id="settingsButton"> ⚙️</button>
-         <p id="timeElement" style="justify-content: right" class="clock"> ----------- </p>
+         <p id="timeElement" style="justify-content: right" class="clock"> ----------------------------</p>
       </div>
     </div>
 <!-- APP ICONS SIDEBAR !-->
     <div id="desktopApps" class="apps"style="padding-top: 25px; padding-left: 15px;">
+      <div class="appicon">
       <div id="notesIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🗒️</div>
       </div> 
       <p style="margin: 0; justify-content: center;">Notes</p>
+      </div>
+      <div class="appicon">
       <div id="mapIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🗺️</div>
       </div>
       <p style="margin: 0; justify-content: center;">Mind Map</p>
+      </div>
+      <div class="appicon">
       <div id="calculatorIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🧮</div>
       </div>
       <p style="margin: 0; justify-content: center;">Calculator</p>
+      </div>
+      <div class="appicon">
       <div id="galleryIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🖼️</div>
       </div>
       <p style="margin: 0; justify-content: center;">Gallery</p>
+      </div>
+      <div class="appicon">
       <div id="paintIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🎨</div>
       </div>
       <p style="margin: 0; justify-content: center;">Paint</p>
+      </div>
+      <div class="appicon">
       <div id="browserIcon" class="desktopIcon">
         <div style="font-size: 42px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">🌐</div>
       </div>
       <p style="margin: 0; justify-content: center;">Browser</p>
+      </div>
+      <div class="appicon">
+      <div id="terminalIcon" class="desktopIcon">
+        <div style="font-size: 42px; width: 50px; height: 50px; display:flex; align-items: center; justify-content: center;">💻</div>
+      </div>
+      <p style="margin: 0; justify-content: center;">Terminal</p>
+      </div>
+      <div class="appicon">
+      <div id="filesIcon" class="desktopIcon">
+        <div style="font-size: 42px; width: 50px; height: 50px; display:flex; align-items: center; justify-content: center;">📁</div>
+      </div>
+      <p style="margin: 0; justify-content: center;">Files</p>
+      </div>
+      <div class="appicon">
+      <div id="musicIcon" class="desktopIcon">
+        <div style="font-size: 42px; width: 50px; height: 50px; display:flex; align-items: center; justify-content: center;">🎶</div>
+      </div>
+      <p style="margin: 0; justify-content: center;">Music</p>
+      </div>
     </div>
 <!-- QUOTES -->
-    <div class="quote" id="quotes">'I miss everything about Chicago, except January and February.' —Gary Cole</div>
+    <div class="quote" id="quotes">
+      'I miss everything about Chicago, except January and February.' —Gary Cole
+    </div>
 <!--SETTINGS WINDOW-->
-<div id="settings" class="window" style="display:none; width:340px;">
+    <div id="settings" class="window" style="display:none; width:340px;">
     <div class="header" id="settingsheader">
       <h1>Settings</h1>
       <div class="windowControls">
@@ -102,8 +137,16 @@
           <div><strong>Toggle Quotes</strong></div>
         </div>
       </div>
+      <div class="about">
+        <h3>About/help</h3>
+        <div class="aboutSection">
+          <p><strong>chicagOS v2.0.0</strong></p>
+          <p>chicagOS is a browser-based desktop enviroment inspired by Chicago</p>
+          <p>Created by Isadora M, @IsaJM111 on Github</p>
+        </div>
+      </div>
     </div>
-</div>
+    </div>
 <!-- NOTES WINDOW -->
     <div id="notes" class="window" style="display:none">
       <div class="header" id="notesheader">
@@ -180,20 +223,73 @@
     </div>
 <!-- GALLERY APP WINDOW -->
     <div id="gallery" class="window" style="display: none">
-       <div class="header" id="galleryheader">
-         <h1>Gallery</h1>
-        <div class="windowControls">
-          <button class="close-button" id="galleryClose">🔴</button>
-        </div>
-       </div>
-       <div id="galleryContainer" class="gallery-container">
-        <img id="galleryImage" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCM_d9SQ56xa8ccPT63FoBy0Jec32p7TRisgVzN3A0Qg&s=10" alt="Gallery photo">
-        <div class="galleryControls">
-          <button onclick="previousPhoto()">←</button>
-          <span id="galleryNumber">1 / 13</span>
-          <button onclick="nextPhoto()">→</button>
-        </div>
-       </div>
+  <div class="header" id="galleryheader">
+    <h1>Gallery</h1>
+    <div class="windowControls">
+      <button class="close-button" id="galleryClose">🔴</button>
+    </div>
+  </div>
+  <div id="galleryContainer" class="gallery-container">
+    <div class="galleryViewer">
+      <button
+        class="galleryArrow galleryPrevious"
+        onclick="previousPhoto()"> ←
+      </button>
+      <div class="galleryImageContainer">
+        <img
+          id="galleryImage"
+          src=""
+          alt="Gallery photo">
+      </div>
+      <button
+        class="galleryArrow galleryNext"
+        onclick="nextPhoto()">
+        →
+      </button>
+    </div>
+    <div class="galleryInfo">
+      <h2 id="galleryPhotoName">Chicago</h2>
+      <span id="galleryNumber">
+        1 / 14
+      </span>
+    </div>
+    <div class="thumbnailContainer">
+      <button
+        class="thumbnailScroll"
+        onclick="scrollThumbnails(-1)">
+        ←
+      </button>
+      <div id="galleryThumbnails" class="galleryThumbnails">
+      </div>
+      <button
+        class="thumbnailScroll"
+        onclick="scrollThumbnails(1)">
+        →
+      </button>
+    </div>
+    <div class="galleryToolbar">
+      <button
+        id="addPhotoButton"
+        onclick="document.getElementById('photoUpload').click()">
+        + Add Photo
+      </button>
+      <input type="file"id="photoUpload"accept="image/*"multiple style="display: none;">
+      <button
+        id="gridViewButton"
+        onclick="showGalleryGrid()">
+        ▦ Grid
+      </button>
+    </div>
+  <div id="galleryGrid"class="gallery-grid"style="display: none;">
+  <div class="galleryGridHeader">
+    <button onclick="showGallerySlideshow()">
+      ← Back
+    </button>
+    <h2>All Photos</h2>
+  </div>
+  <div id="galleryGridPhotos" class="galleryGridPhotos"></div>
+</div>
+  </div>
     </div>
 <!-- PAINT WINDOW  -->
     <div id="paint" class="paintwindow" style="display: none">
@@ -272,6 +368,117 @@
       <div class="header"><h2>Saved Paintings</h2></div>
       <div id="paintingList"></div>
     </div>
+<!--TERMINAL WINDOW-->
+    <div id="terminal" class="window"style="display:none;width:700px;height:450px;">
+      <div class="header" id="terminalheader">
+        <h1>Terminal</h1>
+        <div class="windowControls">
+          <button class="close-button"id="terminalClose">🔴</button>
+        </div>
+      </div>
+      <div class="terminalScreen">
+        <div id="terminalOutput">
+          Welcome to chicagOS Terminal!
+          <br>
+          Type "help" to begin.
+        </div>
+        <div class="terminalInputBox">
+          <span>></span>
+          <input id="terminalInput"type="text"placeholder="Enter command...">
+        </div>
+      </div>
+    </div>
+<!--FILE EXPLORER-->
+    <div id="files" class="window" style="display:none">
+      <div class="header" id="filesheader">
+        <h1>File Explorer</h1>
+        <div class="windowControls">
+          <button class="close-button"id="filesClose">🔴</button>
+        </div>
+      </div>
+      <div class="filesBox">
+      <div class="fileContainer">
+        <div class="folders">
+          <div class="folderbuttons" id="folderbuttons"></div>
+          <div class="foldersControls">
+            <button class="folderControl" onclick="newFolder()">+</button>
+          </div>
+        </div>
+      </div>
+      <div id="fileDisplay"></div>
+      </div>
+    </div>
+<!-- MUSIC PLAYER -->
+    <div id="music" class="window" style="display:none; width:700px; height:520px;">
+      <div class="header" id="musicheader">
+        <h1>Music Player</h1>
+        <div class="windowControls">
+            <button class="close-button" id="musicClose">🔴</button>
+        </div>
+      </div>
+      <div class="musicContainer">
+        <div class="musicLeft">
+            <div id="albumArt" class="albumArt">🎵</div>
+            <div id="songTitle">No Song Loaded</div>
+            <p id="songArtist">Unknown Artist</p>
+            <audio id="audioPlayer"></audio>
+            <div class="timeRow">
+              <span id="currentTime">0:00</span>
+              <input id="progressBar" type="range"min="0"max="100" value="0">
+              <span id="totalTime">0:00</span>
+            </div>
+            <div class="musicControls">
+              <button id="previousSong">⏮</button>
+              <button id="playPause">▶</button>
+              <button id="nextSong">⏭</button>
+            </div>
+            <div class="volumeRow">
+              🔊
+              <input id="volumeSlider"type="range"min="0"max="1"step="0.01"value="1">
+            </div>
+        </div>
+        <div class="musicRight">
+            <button id="addMusicButton">+ Add Songs</button>
+            <input id="musicPicker"type="file"accept="audio/*"multiple hidden>
+            <div id="playlist"></div>
+        </div>
+      </div>
+    </div>
+    </div>
+<!--CONTEXT MENUS-->
+    <div id="folderMenu">
+      <button id="deleteFolderButton">Delete Folder</button>
+      <button id="renameFolderButton">Rename Folder</button>
+    </div>
+    <div id="appIconMenu">
+      <button id="hideButton" onclick="hideAppIcon()">Hide App Icon</button>
+    </div>
+<!--NOTIFICATION CENTER-->
+    <div class="notificationBox" id="notificationCenter" style="display:none">
+      <div class="notifTop">
+        <div id="notificationText">This is a test notification</div>
+        <button class="close-button"id="notificationClose">🔴</button>
+      </div>
+      <div class="timerbar"></div>
+    </div>
+<!--CALENDER POPUP-->
+    <div id="calendarPopup" class="calendarPopup">
+      <div class="calendarHeader">
+        <button id="calendarPrev">‹</button>
+        <div id="calendarMonthYear"></div>
+        <button id="calendarNext">›</button>
+      </div>
+      <div class="calendarWeekdays">
+        <div>Sun</div>
+        <div>Mon</div>
+        <div>Tue</div>
+        <div>Wed</div>
+        <div>Thu</div>
+        <div>Fri</div>
+        <div>Sat</div>
+      </div>
+      <div id="calendarDays" class="calendarDays"></div>
+      <button id="calendarToday">Today</button>
     </div>
 <!-- REFS -->
     <script src="script.js"></script>
