@@ -1,29 +1,5 @@
 let highestZ = 100;
 
-/*
-var selectedIcon = undefined
-function selectIcon(notesIcon) {
-  notesIcon.classList.add("selected");
-  selectedIcon = notesIcon
-} 
-function deselectIcon(notesIcon) {
-  notesIcon.classList.remove("selected");
-  selectedIcon = undefined
-}
-
-function handleIconTap(notesIcon) {
-  if (notesIcon.classList.contains("selected")) {
-    deselectIcon(notesIcon);
-  } else {
-    selectIcon(notesIcon);
-  }
-}
-
-notesIcon.addEventListener("click", function() {
-  handleIconTap(notesIcon);
-});
-*/
-
 //DYNAMIC BACKGROUND
 
 const stars=document.getElementById("stars");
@@ -39,13 +15,312 @@ for(let i=0;i<120;i++){
 document.addEventListener("mousemove",(e)=>{
     const x=(e.clientX/window.innerWidth-.5);
     const y=(e.clientY/window.innerHeight-.5);
-    document.getElementById("clouds").style.transform=
-    `translate(${x*25}px,${y*15}px)`;
-    document.getElementById("skyline").style.transform=
-    `translate(${x*12}px,${y*8}px)`;
-    document.getElementById("lake").style.transform=
-    `translate(${x*6}px,${y*3}px)`;
+    document.getElementById("clouds").style.transform=`translate(${x*25}px,${y*15}px)`;
+    document.getElementById("lake").style.transform=`translate(${x*6}px,${y*3}px)`;
 });
+
+//FILE SYSTEM OPEN AND MAIN CODE
+
+var filesScreen = document.querySelector("#files")
+var filesScreenClose = document.querySelector("#filesClose")
+var filesScreenOpen = document.querySelector("#filesIcon")
+var filesDockOpen = document.querySelector("#filesDockIcon")
+
+filesScreenClose.addEventListener("click", function() {
+  closeWindow(filesScreen);
+  dockClose(filesDockIcon)
+});
+filesScreenOpen.addEventListener("click", function() {
+  openWindow(filesScreen);
+  dockOpen(filesDockIcon);
+});
+filesDockOpen.addEventListener("click", function() {
+  openWindow(filesScreen);
+  dockOpen(filesDockIcon);
+});
+
+let db = null;
+let dbReady = false;
+
+const dbRequest = indexedDB.open("chicagOS", 1);
+dbRequest.onupgradeneeded = function(event) {
+    db = event.target.result;
+    if (!db.objectStoreNames.contains("folders")) {
+      db.createObjectStore("folders", {
+        keyPath: "name"
+      });
+    }
+    if (!db.objectStoreNames.contains("files")) {
+        const fileStore = db.createObjectStore("files", {
+            keyPath: "id",
+            autoIncrement: true
+        });
+        fileStore.createIndex("folder", "folder", {
+            unique: false
+        });
+    }
+};
+
+dbRequest.onsuccess = function(event) {
+    db = event.target.result;
+    dbReady = true;
+    initializeFileSystem();
+    updateNotes();
+    loadSavedMusic();
+    loadSavedGalleryPhotos();
+};
+
+const defaultFolders = [
+  "Desktop",
+  "Notes",
+  "Paintings",
+  "Pictures",
+  "Downloads",
+  "Music"
+];
+
+function initializeFileSystem() {
+  const transaction = db.transaction(
+    "folders",
+    "readwrite"
+  );
+  const store = transaction.objectStore("folders");
+  defaultFolders.forEach(function(folderName) {
+    const request = store.get(folderName);
+    request.onsuccess = function(event) {
+      if (!event.target.result) {
+        store.add({
+          name: folderName,
+          system: true
+        });
+      }
+    };
+  });
+  transaction.oncomplete = function() {
+    loadFolders();
+  };
+}
+
+function saveFile(folder, name, content, callback) {
+    const transaction = db.transaction("files","readwrite");
+    const store = transaction.objectStore("files");
+    const request = store.add({
+        folder: folder,
+        name: name,
+        content: content,
+        created: Date.now()
+    });
+    request.onsuccess = function(event) {
+        const fileId = event.target.result;
+        if (callback) {
+          callback(fileId);
+        }
+    };
+}
+
+function getFiles(folder, callback) {
+    if (!dbReady || !db) {return;}
+    const transaction =db.transaction("files", "readonly");
+    const store = transaction.objectStore("files");
+    const index = store.index("folder");
+    const request = index.getAll(folder);
+    request.onsuccess = function() {
+        callback(request.result);
+    };
+    request.onerror = function(event) {
+        callback([]);
+    };
+}
+
+function openFolder(folder, button) {
+  const display = document.getElementById("fileDisplay");
+  display.innerHTML = "";
+  document.querySelectorAll(".folderbutton").forEach(function(folderButton) {
+    folderButton.classList.remove("selected");
+  });
+  button.classList.add("selected");
+  getFiles(folder, function(files) {
+    files.forEach(function(file) {
+      const fileButton =document.createElement("button");
+      fileButton.className = "fileButton";
+      fileButton.textContent = file.name;
+      fileButton.ondblclick = function() {
+        if (folder === "Notes") {
+          createNote(file.content);
+          openWindow(notesScreen);
+        }
+        if (folder === "Paintings") {
+          loadPainting(file.id);
+          openWindow(paintScreen);
+        }
+      };
+      display.appendChild(fileButton);
+    });
+      if (files.length === 0) {
+        display.textContent = "This folder is empty";
+      }
+  });
+}
+
+function deleteFile(id) {
+  const transaction = db.transaction(
+    "files",
+    "readwrite"
+  );
+  const store = transaction.objectStore("files");
+  store.delete(id);
+  transaction.oncomplete = function() {
+    loadFolders();
+  };
+  transaction.onerror = function(event) {
+    return;
+  };
+}
+
+function newFolder() {
+  const folderName = prompt("Name the new folder.");
+  if (!folderName) {
+    return;
+  }
+  const transaction = db.transaction("folders", "readwrite");
+  const store = transaction.objectStore("folders");
+  const request = store.add({
+    name: folderName,
+    system: false
+  });
+  transaction.oncomplete = function() {loadFolders();};
+}
+
+function deleteFolder(folderName) {
+  const transaction = db.transaction(
+    "folders",
+    "readwrite"
+  );
+  const store = transaction.objectStore("folders");
+  const request = store.get(folderName);
+  request.onsuccess = function(event) {
+    const folder = event.target.result;
+    if (!folder) {
+      return;
+    }
+    if (folder.system) {
+      newNotification("System folders cannot be deleted.");
+      return;
+    }
+    store.delete(folderName);
+    deleteFilesInFolder(folderName);
+    transaction.oncomplete = function() {
+      loadFolders();
+    };
+  };
+}
+
+function deleteFilesInFolder(folderName) {
+  getFiles(folderName, function(files) {
+    const transaction = db.transaction(
+      "files",
+      "readwrite"
+    );
+    const store = transaction.objectStore("files");
+    files.forEach(function(file) {
+      store.delete(file.id);
+    });
+  });
+}
+
+function loadFolders() {
+    const folderContainer = document.getElementById("folderbuttons");
+    if (!folderContainer) {return;}
+    const transaction = db.transaction("folders", "readonly");
+    const store = transaction.objectStore("folders");
+    const request = store.getAll();
+    request.onsuccess = function(event) {
+      const folders = event.target.result;
+      folderContainer.innerHTML = "";
+      folders.forEach(function(folder) {
+    const button = document.createElement("button");
+    button.className = "folderbutton";
+    button.textContent = folder.name;
+    button.onclick = function() {
+        openFolder(folder.name, button);
+    };
+    button.oncontextmenu = function(event) {
+        event.preventDefault();
+        selectedFolder = folder.name;
+        showFolderMenu(
+            event.clientX,
+            event.clientY
+        );
+    };
+    folderContainer.appendChild(button);
+  });
+    };
+}
+
+function showFolderMenu(x,y){
+    let menu =document.getElementById("folderMenu");
+    menu.style.left = x + "px";
+    menu.style.top = y + "px";
+    menu.style.display = "flex";
+}
+
+function hideFolderMenu(){
+  document.getElementById("folderMenu").style.display = "none";
+}
+
+document.addEventListener("click",function(){
+    hideFolderMenu();
+});
+
+function renameFolder(oldName) {
+  const newName = prompt("Enter a new folder name:", oldName);
+  if (!newName || newName === oldName) {
+    return;
+  }
+  const transaction = db.transaction(
+    "folders",
+    "readwrite"
+  ); 
+  const store = transaction.objectStore("folders");
+  const request = store.get(oldName);
+  request.onsuccess = function(event) {
+    const folder = event.target.result;
+    if (!folder) {
+      return;
+    }
+    if (folder.system) {
+      newNotification("System folders cannot be renamed.");
+      return;
+    }
+    const newFolderRequest = store.add({name: newName, system: false});
+    newFolderRequest.onsuccess = function() {
+      getFiles(oldName, function(files) {
+        files.forEach(function(file) {
+           const fileTransaction = db.transaction("files","readwrite");
+           const fileStore = fileTransaction.objectStore("files");
+           file.folder = newName;
+           fileStore.put(file);
+        });
+      });
+      store.delete(oldName);
+      newNotification("Folder renamed.");
+      loadFolders();
+    };
+    newFolderRequest.onerror =
+    function() {
+      newNotification("That folder already exists.");
+    };
+  };
+}
+
+document.getElementById("deleteFolderButton").onclick = function(){
+  deleteFolder(selectedFolder);
+  hideFolderMenu();
+};
+document.getElementById("renameFolderButton").onclick = function(){
+  renameFolder(selectedFolder);
+  hideFolderMenu();
+};
 
 // SETTINGS APP OPEN AND MAIN CODE
 
@@ -94,7 +369,6 @@ setWallpaper(savedWallpaper);
 document.querySelector(
 `input[value="${savedWallpaper}"]`
 ).checked=true;
-
 const quotetoggle = document.getElementById('toggle');
 const quote = document.getElementById('quotes');
 quotetoggle.addEventListener('change', function() {
@@ -108,7 +382,7 @@ quotetoggle.addEventListener('change', function() {
 // Clock
 
 function updateTime() {
-    var currentTime = new Date().toLocaleString();
+    var currentTime =   new Date().toLocaleString();
     var timeText = document.querySelector("#timeElement");
     timeText.innerHTML = currentTime;
 }
@@ -126,9 +400,11 @@ dragElement(document.getElementById("browser"));
 dragElement(document.getElementById("loadPaintWindow"));
 dragElement(document.getElementById("settings"));
 dragElement(document.getElementById("quotes"));
+dragElement(document.getElementById("terminal"));
+dragElement(document.getElementById("files"));
+dragElement(document.getElementById("music"));
 
 function dragElement(element) {
-
   var initialX = 0;
   var initialY = 0;
   var currentX = 0;
@@ -164,21 +440,29 @@ function dragElement(element) {
   }
 }
 
+// WINDOW GENERAL CODE
+
+function openWindow(window,dockIcon){
+  window.style.display = "block";
+  if(dockIcon){
+    dockIcon.classList.add("open");
+  }
+  highestZ++;
+  window.style.zIndex=highestZ;
+}
+
+function closeWindow(window,dockIcon){
+    window.style.display = "none";
+    if(dockIcon){
+        dockIcon.classList.remove("open");
+    }
+}
+
 // WELCOME SCREEN OPEN
 
 var welcomeScreen = document.querySelector("#welcome")
 var welcomeScreenClose = document.querySelector("#welcomeClose")
 var welcomeScreenOpen = document.querySelector("#welcomeOpen")
-
-function closeWindow(element) {
-  element.style.display = "none"
-}
-
-function openWindow(element){
-    if(document.body.contains(element)){
-        element.style.display="block";
-    }
-}
 
 welcomeScreenClose.addEventListener("click", function() {
   closeWindow(welcomeScreen);
@@ -192,16 +476,19 @@ welcomeScreenOpen.addEventListener("click", function() {
 var notesScreen = document.querySelector("#notes")
 var notesScreenClose = document.querySelector("#notesClose")
 var notesScreenOpen = document.querySelector("#notesIcon")
-var notesDockOpen = document.querySelector("#notesDockIcon")
+var notesDockOpen = document.querySelector("#notesDockIcon") 
 
 notesScreenClose.addEventListener("click", function() {
   closeWindow(notesScreen);
+  dockClose(notesDockIcon)
 });
 notesScreenOpen.addEventListener("click", function() {
   openWindow(notesScreen);
+  dockOpen(notesDockIcon);
 });
 notesDockOpen.addEventListener("click", function() {
   openWindow(notesScreen);
+  dockOpen(notesDockIcon);
 });
 
 // MIND MAP APP OPEN
@@ -213,94 +500,110 @@ var mapDockOpen = document.querySelector("#mapDockIcon")
 
 mindMapScreenClose.addEventListener("click", function() {
   closeWindow(mindMapScreen);
+  dockClose(mapDockIcon);
 });
 mindMapScreenOpen.addEventListener("click", function() {
   openWindow(mindMapScreen);
+  dockOpen(mapDockIcon);
 });
 mapDockOpen.addEventListener("click", function() {
   openWindow(mindMapScreen);
+  dockOpen(mapDockIcon);
 });
 
-// NOTES MAiN CODE
+// NOTES MAIN CODE
 
 const notesContainer = document.querySelector("#notesContainer");
 const notesContainerNew = document.querySelector("#newNote");
 
 function createNote(text = "") {
-  const note = document.createElement("div");
-  note.classList.add("note");
-  const deleteButton = document.createElement("button");
-  deleteButton.classList.add("delete-note");
-  deleteButton.textContent = "✕";
-  deleteButton.style.marginTop = "8px";
-  const saveButton = document.createElement("button");
-  saveButton.className = "save-note";
-  saveButton.style.marginTop = "8px";
-  saveButton.textContent = "💾";
-  const noteInput = document.createElement("div");
-  noteInput.classList.add("note-input");
-  noteInput.contentEditable = "true";
-  noteInput.setAttribute("data-placeholder","Type your note here...");
-  noteInput.innerHTML = text;
-  deleteButton.onclick = () => note.remove();
-  saveButton.onclick = () => {saveNote(noteInput.innerHTML);};
-  note.appendChild(deleteButton);
-  note.appendChild(noteInput);
-  note.appendChild(saveButton);
-  notesContainer.appendChild(note);
-  noteInput.focus();
+    const note = document.createElement("div");
+    note.classList.add("note");
+    const deleteButton = document.createElement("button");
+    deleteButton.classList.add("delete-note");
+    deleteButton.textContent = "✕";
+    deleteButton.style.marginTop = "8px";
+    const saveButton = document.createElement("button");
+    saveButton.className = "save-note";
+    saveButton.style.marginTop = "8px";
+    saveButton.textContent = "💾";
+    const noteInput = document.createElement("div");
+    noteInput.classList.add("note-input");
+    noteInput.contentEditable = "true";
+    noteInput.setAttribute(
+      "data-placeholder",
+      "Type your note here..."
+    );
+    noteInput.innerHTML = text;
+    deleteButton.onclick = () => {
+      note.remove();
+    };
+    saveButton.onclick = () => {
+      saveNote(noteInput.innerHTML);
+    };
+    note.appendChild(deleteButton);
+    note.appendChild(noteInput);
+    note.appendChild(saveButton);
+    notesContainer.appendChild(note);
+    noteInput.focus();
 }
 
 notesContainerNew.addEventListener("click", () => {
-  createNote();
+    createNote();
 });
 
 function saveNote(content) {
-    let name = prompt("Name this note:");
-    if(name === null) return;
-    name = name.trim();
-    if(name === "")
-        name = "Untitled";
-    const notes = JSON.parse(localStorage.getItem("notes")) || [];
-    notes.push({name: name, content: content});
-    localStorage.setItem("notes", JSON.stringify(notes));
+  let name = prompt("Name this note:");
+  if (name === null) {
+    return;
+  }
+  name = name.trim();
+  if (name === "") {
+    name = "Untitled";
+  }
+  saveFile("Notes", name, content, function() {
+    newNotification("'" + name + "' saved successfully.");
     updateNotes();
-}
-
-function updateNotes() {
-  const notes = JSON.parse(localStorage.getItem("notes")) || [];
-  const list = document.getElementById("notesList");
-  list.innerHTML = "";
-  notes.forEach((note, index) => {
-    const row = document.createElement("div");
-    row.className = "saved-note-row";
-    const button = document.createElement("button");
-    button.className = "load-note-button";
-    button.textContent = note.name;
-    button.onclick = () => {loadNote(index);};
-    const deleteButton = document.createElement("button");
-    deleteButton.className = "delete-saved-note-button";
-    deleteButton.textContent = "✕";
-    deleteButton.onclick = (e) => {
-      e.stopPropagation();
-      deleteSavedNote(index);
-    };
-    row.appendChild(button);
-    row.appendChild(deleteButton);
-    list.appendChild(row);
   });
 }
 
-function deleteSavedNote(index){
-  const notes = JSON.parse(localStorage.getItem("notes")) || [];
-  notes.splice(index, 1);
-  localStorage.setItem("notes", JSON.stringify(notes));
-  updateNotes();
+function updateNotes() {
+  const list = document.getElementById("notesList");
+  list.innerHTML = "";
+  getFiles("Notes", function(notes) {
+    notes.forEach(function(note) {
+      const row = document.createElement("div");
+      row.className = "saved-note-row";
+      const button = document.createElement("button");
+      button.className = "load-note-button";
+      button.textContent = note.name;
+      button.onclick = function() {
+        loadNote(note);
+      };
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "delete-saved-note-button";
+      deleteButton.textContent = "✕";
+      deleteButton.onclick = function(event) {
+        event.stopPropagation();
+        deleteSavedNote(note.id);
+      };
+      row.appendChild(button);
+      row.appendChild(deleteButton);
+      list.appendChild(row);
+    });
+    if (notes.length === 0) {
+      list.textContent = "No saved notes.";
+    }
+  });
 }
 
-function loadNote(index){
-  const notes = JSON.parse(localStorage.getItem("notes")) || [];
-  createNote(notes[index].content);
+function deleteSavedNote(id) {
+  deleteFile(id);
+  setTimeout(function() {updateNotes();}, 50);
+}
+
+function loadNote(note) {
+  createNote(note.content);
 }
 
 createNote();
@@ -315,12 +618,15 @@ var calculatorDockOpen = document.querySelector("#calculatorDockIcon")
 
 calculatorScreenClose.addEventListener("click", function() {
   closeWindow(calculatorScreen);
+  dockClose(calculatorDockIcon);
 });
 calculatorScreenOpen.addEventListener("click", function() {
   openWindow(calculatorScreen);
+  dockOpen(calculatorDockIcon);
 });
 calculatorDockOpen.addEventListener("click", function() {
   openWindow(calculatorScreen);
+  dockOpen(calculatorDockIcon);
 });
 
 // CALC APP MAIN CODE
@@ -479,7 +785,7 @@ function drawMindMapLines() {
 
 function deleteSelectedNode() {
   if (selectedNodeId === 0) {
-    alert("You cannot delete the main idea.");
+    newNotification("You cannot delete the main idea.");
     return;
   }
   deleteNodeAndChildren(selectedNodeId);
@@ -550,52 +856,313 @@ var galleryDockOpen = document.querySelector("#galleryDockIcon")
 
 galleryScreenClose.addEventListener("click", function() {
   closeWindow(galleryScreen);
+  dockClose(galleryDockIcon);
 });
 galleryScreenOpen.addEventListener("click", function() {
   openWindow(galleryScreen);
+  dockOpen(galleryDockIcon);
 });     
 galleryDockOpen.addEventListener("click", function() {
   openWindow(galleryScreen);
+  dockOpen(galleryDockIcon);
 });     
 
-const galleryPhotos = [
-  { src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCM_d9SQ56xa8ccPT63FoBy0Jec32p7TRisgVzN3A0Qg&s=10" },
-  { src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrYM8BBcsbNRMvCcrskAKW70lWv3N3CwlDNYAY6fsHUw&s=10" },
-  { src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWshF1loKaYOPI7RpThNjeZWS-yZMysDUg8yvo5DzMwA&s=10" },
-  { src: "https://i.redd.it/3enek456oxf31.jpg"},
-  { src: "https://wallpapers.com/images/hd/dark-aesthetic-chicago-city-at-night-j8nbcohdzy6xytxj.jpg"}, 
-  { src: "https://static1.squarespace.com/static/57f96248d482e9a19e507a7e/5e62d0cb4cd4c7519bd3a3ca/5e62d0ee4cd4c7519bd3a59c/1726440655091/?format=1500w"},
-  { src: "https://w0.peakpx.com/wallpaper/809/229/HD-wallpaper-cade-on-chicago-city-aesthetic-new-york-city-travel-city-new-york-summer.jpg"},
-  { src: "https://www.shutterstock.com/image-photo/chicago-river-riverwalk-on-cloudy-600nw-2523321043.jpg"},
-  { src: "https://i.redd.it/3wt8l37qtjg21.jpg"},
-  { src: "https://external-preview.redd.it/theres-something-about-the-sheer-raw-grit-of-this-city-that-v0-6jPW7Kz-EnBW1CqYGJPYr8FBaJbeBDvXvnRHjA7GJXM.jpg?width=640&crop=smart&auto=webp&s=f7805154337e1af44dd7a8bdfd6c755d7f0bdc0b"},
-  { src: "https://images.squarespace-cdn.com/content/v1/57f96248d482e9a19e507a7e/1583534580986-UWYK00A7M35D9MYNKJ6C/Photography+Point+North+Ave+Beach+Chicago+John+Hancock+Center+Sunset+City+Illinois+Chicago+Blue+Hour+Ice+Icebergs+Lake+Michigan+Skyline"},
-  { src: "https://freechicagowalkingtours.com/wp-content/uploads/2017/04/el-train.jpg"},
-  { src: "https://imageio.forbes.com/i-forbesimg/media/lists/places/chicago-il_416x416.jpg?format=jpg&height=416&width=416&fit=bounds"}
+const defaultGalleryPhotos = [
+  {
+    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCM_d9SQ56xa8ccPT63FoBy0Jec32p7TRisgVzN3A0Qg&s=10",
+    name: "Chicago"
+  },
+  {
+    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrYM8BBcsbNRMvCcrskAKW70lWv3N3CwlDNYAY6fsHUw&s=10",
+    name: "Chicago"
+  },
+  {
+    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWshF1loKaYOPI7RpThNjeZWS-yZMysDUg8yvo5DzMwA&s=10",
+    name: "Chicago"
+  },
+  {
+    src: "https://i.redd.it/3enek456oxf31.jpg",
+    name: "Chicago"
+  },
+  {
+    src: "https://wallpapers.com/images/hd/dark-aesthetic-chicago-city-at-night-j8nbcohdzy6xytxj.jpg",
+    name: "Chicago at Night"
+  },
+  {
+    src: "https://static1.squarespace.com/static/57f96248d482e9a19e507a7e/5e62d0cb4cd4c7519bd3a3ca/5e62d0ee4cd4c7519bd3a59c/1726440655091/?format=1500w",
+    name: "Chicago"
+  },
+  {
+    src: "https://w0.peakpx.com/wallpaper/809/229/HD-wallpaper-cade-on-chicago-city-aesthetic-new-york-city-travel-city-new-york-summer.jpg",
+    name: "Chicago Skyline"
+  },
+  {
+    src: "https://www.shutterstock.com/image-photo/chicago-river-riverwalk-on-cloudy-600nw-2523321043.jpg",
+    name: "Chicago Riverwalk"
+  },
+  {
+    src: "https://i.redd.it/3wt8l37qtjg21.jpg",
+    name: "Chicago"
+  },
+  {
+    src: "https://external-preview.redd.it/theres-something-about-the-sheer-raw-grit-of-this-city-that-v0-6jPW7Kz-EnBW1CqYGJPYr8FBaJbeBDvXvnRHjA7GJXM.jpg?width=640&crop=smart&auto=webp&s=f7805154337e1af44dd7a8bdfd6c755d7f0bdc0b",
+    name: "Chicago"
+  },
+  {
+    src: "https://images.squarespace-cdn.com/content/v1/57f96248d482e9a19e507a7e/1583534580986-UWYK00A7M35D9MYNKJ6C/Photography+Point+North+Ave+Beach+Chicago+John+Hancock+Center+Sunset+City+Illinois+Chicago+Blue+Hour+Ice+Icebergs+Lake+Michigan+Skyline",
+    name: "Chicago Skyline"
+  },
+  {
+    src: "https://freechicagowalkingtours.com/wp-content/uploads/2017/04/el-train.jpg",
+    name: "Chicago El Train"
+  },
+  {
+    src: "https://imageio.forbes.com/i-forbesimg/media/lists/places/chicago-il_416x416.jpg?format=jpg&height=416&width=416&fit=bounds",
+    name: "Chicago"
+  }
 ];
 
+let customGalleryPhotos = [];
+let galleryPhotos = [...defaultGalleryPhotos];
 let currentPhoto = 0;
+
+function loadSavedGalleryPhotos() {
+  getFiles("Pictures", function(files) {
+    files.forEach(function(file) {
+      if (!file.content) {
+        return;
+      }
+      if (!file.content.type || !file.content.type.startsWith("image/")) {
+        return;
+      }
+      const imageURL = URL.createObjectURL(file.content);
+      const photo = {
+        src: imageURL,
+        name: file.name,
+        custom: true,
+        fileId: file.id
+      };
+      customGalleryPhotos.push(photo);
+      galleryPhotos.push(photo);
+    });
+    createThumbnails();
+    showPhoto();
+  });
+}
 
 function showPhoto() {
   const image = document.getElementById("galleryImage");
   const number = document.getElementById("galleryNumber");
-  image.src = galleryPhotos[currentPhoto].src;
+  const name = document.getElementById("galleryPhotoName");
+  if (!galleryPhotos.length) {
+    return;
+  }
+  const photo = galleryPhotos[currentPhoto];
+  image.src = photo.src;
   number.textContent = (currentPhoto + 1) + " / " + galleryPhotos.length;
+  name.textContent = photo.name || "Untitled";
+  updateThumbnails();
 }
 
 function nextPhoto() {
+  if (galleryPhotos.length === 0) {
+    return;
+  }
   currentPhoto++;
   if (currentPhoto >= galleryPhotos.length) {
-    currentPhoto = 0;}
+    currentPhoto = 0;
+  }
   showPhoto();
 }
 
 function previousPhoto() {
+  if (galleryPhotos.length === 0) {
+    return;
+  }
   currentPhoto--;
   if (currentPhoto < 0) {
-    currentPhoto = galleryPhotos.length - 1;}
+    currentPhoto = galleryPhotos.length - 1;
+  }
   showPhoto();
 }
+
+function createThumbnails() {
+  const thumbnailContainer = document.getElementById("galleryThumbnails");
+  thumbnailContainer.innerHTML = "";
+  galleryPhotos.forEach((photo, index) => {
+    const thumbnail = document.createElement("div");
+    thumbnail.className = "galleryThumbnail";
+    thumbnail.onclick = function () {
+      currentPhoto = index;
+      showPhoto();
+    };
+    const image = document.createElement("img");
+    image.src = photo.src;
+    image.alt = photo.name || "Gallery photo";
+    thumbnail.appendChild(image);
+    if (photo.custom === true) {
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "deleteThumbnail";
+      deleteButton.textContent = "x";
+      deleteButton.onclick = function (event) {
+        event.stopPropagation();
+        deleteCustomPhoto(index);
+      };
+      thumbnail.appendChild(deleteButton);
+    }
+    thumbnailContainer.appendChild(thumbnail);
+  });
+  updateThumbnails();
+}
+
+function updateThumbnails() {
+  const thumbnails = document.querySelectorAll(".galleryThumbnail");
+  thumbnails.forEach((thumbnail, index) => {
+    thumbnail.classList.remove("selected");
+    if (index === currentPhoto) {
+      thumbnail.classList.add("selected");
+      thumbnail.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center"
+      });
+    }
+  });
+}
+
+function scrollThumbnails(direction) {
+  const container = document.getElementById("galleryThumbnails");
+  container.scrollBy({
+    left: direction * 250,
+    behavior: "smooth"
+  });
+}
+
+const photoUpload = document.getElementById("photoUpload");
+
+photoUpload.addEventListener("change", function (event) {
+  const files = Array.from(event.target.files);
+  if (files.length === 0) {
+    return;
+  }
+  files.forEach(function (file) {
+    if (!file.type.startsWith("image/")) {
+      return;
+    }
+    saveFile(
+      "Pictures", file.name,file,function(fileId) {
+        const imageURL = URL.createObjectURL(file);
+        const newPhoto = {src: imageURL,name: file.name,custom: true,fileId: fileId};
+        customGalleryPhotos.push(newPhoto);
+        galleryPhotos.push(newPhoto);
+        createThumbnails();
+        currentPhoto = galleryPhotos.length - 1;
+        showPhoto();
+      }
+    );
+  });
+  photoUpload.value = "";
+});
+
+function deleteCustomPhoto(index) {
+  const photo = galleryPhotos[index];
+  if (!photo || photo.custom !== true) {
+    return;
+  }
+  const confirmed = confirm("Delete this photo?");
+  if (!confirmed) {
+    return;
+  }
+  customGalleryPhotos =
+    customGalleryPhotos.filter(
+      function (photoItem) {
+        return photoItem.src !== photo.src;
+      }
+    );
+  localStorage.setItem(
+    "customGalleryPhotos",
+    JSON.stringify(customGalleryPhotos)
+  );
+  galleryPhotos.splice(index, 1);
+  if (currentPhoto >= galleryPhotos.length) {
+    currentPhoto = galleryPhotos.length - 1;
+  }
+  if (currentPhoto < 0) {
+    currentPhoto = 0;
+  }
+  createThumbnails();
+  showPhoto();
+}
+
+function showGalleryGrid() {
+  const viewer = document.querySelector(".galleryViewer");
+  const info = document.querySelector(".galleryInfo");
+  const thumbnails = document.querySelector(".thumbnailContainer");
+  const toolbar = document.querySelector(".galleryToolbar");
+  const grid = document.getElementById("galleryGrid");
+  const gridPhotos = document.getElementById("galleryGridPhotos");
+  viewer.style.display = "none";
+  info.style.display = "none";
+  thumbnails.style.display = "none";
+  toolbar.style.display = "none";
+  grid.style.display = "flex";
+  gridPhotos.innerHTML = "";
+  galleryPhotos.forEach(function (photo, index) {
+    const item = document.createElement("div");
+    item.className ="galleryGridItem";
+    const image = document.createElement("img");
+    image.src = photo.src;
+    image.alt = photo.name || "Gallery photo";
+    image.onclick = function () {
+      currentPhoto = index;
+      showGallerySlideshow();
+    };
+    item.appendChild(image);
+    const title =document.createElement("span");
+    title.textContent =photo.name || "Untitled";
+    item.appendChild(title);
+    gridPhotos.appendChild(item);
+  });
+}
+
+function showGallerySlideshow() {
+  const viewer = document.querySelector(".galleryViewer");
+  const info = document.querySelector(".galleryInfo");
+  const thumbnails = document.querySelector(".thumbnailContainer");
+  const toolbar = document.querySelector(".galleryToolbar");
+  const grid = document.getElementById("galleryGrid");
+  viewer.style.display = "flex";
+  info.style.display = "block";
+  thumbnails.style.display = "flex";
+  toolbar.style.display = "flex";
+  grid.style.display = "none";
+  showPhoto();
+}
+
+document.addEventListener("keydown", function (event) {
+  if (
+    event.target.tagName === "INPUT" ||
+    event.target.tagName === "TEXTAREA"
+  ) {
+    return;
+  }
+  const gallery =document.getElementById("gallery");
+  if (
+    gallery.style.display === "none" ||
+    !gallery.style.display
+  ) {
+    return;
+  }
+  if (event.key === "ArrowRight") {
+    nextPhoto();
+  }
+  if (event.key === "ArrowLeft") {
+    previousPhoto();
+  }
+});
+
+createThumbnails();
+showPhoto();
 
 // PAINT APP OPEN
 
@@ -608,12 +1175,15 @@ var paintDockOpen = document.querySelector("#paintDockIcon")
 paintScreenClose.addEventListener("click", function() {
   closeWindow(paintScreen);
   closeWindow(loadPaint);
+  dockClose(paintDockIcon);
 });
 paintScreenOpen.addEventListener("click", function() {
   openWindow(paintScreen);
+  dockOpen(paintDockIcon);
 });
 paintDockOpen.addEventListener("click", function() {
   openWindow(paintScreen);
+  dockOpen(paintDockIcon);
 });
 
 // PAINT APP MAIN CODE
@@ -678,55 +1248,78 @@ function clearCanvas() {
 
 function saveCanvas() {
     let name = prompt("Enter a name for your painting:");
-    if (name === null) return;
+    if (name === null) {
+        return;
+    }
     name = name.trim();
     if (name === "") {
         name = "Untitled";
     }
     const image = canvas.toDataURL("image/png");
-    const paintings =
-        JSON.parse(localStorage.getItem("paintings")) || [];
-    paintings.push({
-        name: name,
-        image: image
+    saveFile("Paintings", name, image, function(fileId) {
+        newNotification(
+            "'" + name + "' saved successfully."
+        );
+        loadCanvas();
     });
-    localStorage.setItem(
-        "paintings",
-        JSON.stringify(paintings)
-    );
 }
 
 function loadCanvas() {
-    const paintings =
-        JSON.parse(localStorage.getItem("paintings")) || [];
     const list = document.getElementById("paintingList");
     list.innerHTML = "";
-    paintings.forEach((painting,index)=>{
-        const button = document.createElement("button");
-        button.textContent = painting.name;
-        button.classList.add("load-painting-button");
-        button.onclick = ()=>{
-            loadPainting(index);
-            closeWindow(document.getElementById("loadPaintWindow"));
-        };
-        list.appendChild(button);
+    getFiles("Paintings", function(paintings) {
+        paintings.forEach(function(painting) {
+            const button = document.createElement("button");
+            button.textContent = painting.name;
+            button.classList.add("load-painting-button");
+            button.onclick = function() {
+                loadPainting(painting.id);
+                closeWindow(
+                    document.getElementById(
+                        "loadPaintWindow"
+                    )
+                );
+            };
+            list.appendChild(button);
+        });
+        if (paintings.length === 0) {
+            list.textContent = "No saved paintings.";
+        }
+        const loadWindow = document.getElementById("loadPaintWindow");
+        if (loadWindow.style.display === "none") {
+            openWindow(loadWindow);
+        } else {
+            closeWindow(loadWindow);
+        }
     });
-    if (document.getElementById("loadPaintWindow").style.display === "none") {
-        openWindow(document.getElementById("loadPaintWindow"));
-    } else {
-        closeWindow(document.getElementById("loadPaintWindow"));
-    }
-};
+}
 
-function loadPainting(index){
-    const paintings =
-        JSON.parse(localStorage.getItem("paintings"));
-    const image = new Image();
-    image.onload = function(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.drawImage(image,0,0);
-    };
-    image.src = paintings[index].image;
+function loadPainting(id) {
+    getFiles("Paintings", function(paintings) {
+        const painting = paintings.find(function(file) {
+            return file.id === id;
+        });
+        if (!painting) {
+            return;
+        }
+        const image = new Image();
+        image.onload = function() {
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+            ctx.drawImage(
+                image,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+        };
+        image.src = painting.content;
+    });
 }
 
 // QUOTES MAIN CODE
@@ -761,12 +1354,15 @@ var browserDockOpen = document.querySelector("#browserDockIcon")
 
 browserScreenClose.addEventListener("click", function() {
   closeWindow(browserScreen);
+  dockClose(browserDockIcon);
 });
 browserScreenOpen.addEventListener("click", function() {
   openWindow(browserScreen);
+  dockOpen(browserDockIcon);
 });
 browserDockOpen.addEventListener("click", function() {
   openWindow(browserScreen);
+  dockOpen(browserDockIcon);
 });
 
 // BROWSER APP MAIN CODE
@@ -881,6 +1477,467 @@ document.getElementById("forwardButton")
 
 updateBrowserHistory();
 
+// TERMINAL APP OPEN
+
+var terminalScreen = document.querySelector("#terminal")
+var terminalScreenClose = document.querySelector("#terminalClose")
+var terminalScreenOpen = document.querySelector("#terminalIcon")
+var terminalDockOpen = document.querySelector("#terminalDockIcon")
+
+terminalScreenClose.addEventListener("click", function() {
+  closeWindow(terminalScreen);
+  dockClose(terminalDockIcon)
+});
+terminalScreenOpen.addEventListener("click", function() {
+  openWindow(terminalScreen);
+  dockOpen(terminalDockIcon);
+});
+terminalDockOpen.addEventListener("click", function() {
+  openWindow(terminalScreen);
+  dockOpen(terminalDockIcon);
+});
+
+// TERMINAL APP MAIN CODE
+
+function printTerminal(text){
+    const output = document.getElementById("terminalOutput");
+    output.innerHTML +="<br>"+text;
+    output.scrollTop =output.scrollHeight;
+}
+
+function typeTerminal(text,speed=25){
+  const output = document.getElementById("terminalOutput");
+  let line =document.createElement("div");
+  output.appendChild(line);
+  let i=0;
+  function type(){
+    if(i<text.length){
+      line.innerHTML += text.charAt(i);
+      i++;
+      output.scrollTop = output.scrollHeight;
+      setTimeout(type,speed);
+    }
+  }
+  type();
+}
+
+function runCommand(command){
+    command = command.toLowerCase();
+    if(command==="help"){
+        printTerminal(
+        "Commands:<br>"+
+        "help<br>"+
+        "clear<br>"+
+        "ls<br>"+
+        "date<br>"+
+        "time<br>"+
+        "about<br>"+
+        "open (app)<br>"+
+        "close (app)<br>"
+        );
+    }
+    else if(command==="clear"){
+      document.getElementById("terminalOutput").innerHTML="";
+    }
+    else if(command==="date"){
+      typeTerminal(new Date().toDateString());
+    }
+    else if(command==="time"){
+      typeTerminal(new Date().toLocaleTimeString());
+    }
+    else if(command==="about"){
+      typeTerminal("chicagOS Version 1.0");
+    }
+    else if(command==="ls"){
+      printTerminal("Notes<br>"+"Mind Map<br>"+"Calculator<br>"+"Gallery<br>"+"Paint<br>"+"Browser<br>"+"Files<br>");
+    }
+    else if(command==="open notes"){
+      openWindow(notes);
+      dockOpen(notesDockIcon);
+      typeTerminal("Notes opened");
+    }
+    else if(command==="open mind map"){
+      openWindow(mindMap);
+      dockOpen(mapDockIcon);
+      typeTerminal("Mind Map opened")
+    }
+    else if(command==="open calculator"){
+      openWindow(calculatorScreen);
+      dockOpen(calculatorDockIcon);
+      typeTerminal("Calculator opened");
+    }
+    else if(command==="open paint"){
+      openWindow(paint);
+      dockOpen(paintDockIcon);
+      typeTerminal("Paint opened");
+    }
+    else if(command==="open gallery"){
+      openWindow(galleryScreen);
+      dockOpen(galleryDockIcon);
+      typeTerminal("galleryOpened");
+    }
+    else if(command==="open browser"){
+      openWindow(browser);
+      dockOpen(browserDockIcon);
+      typeTerminal("Browser opened");
+    }
+    else if(command==="open files"){
+      openWindow(files);
+      dockOpen(filesDockIcon);
+      typeTerminal("Files opened");
+    }
+    else if(command==="open music"){
+      openWindow(music);
+      dockOpen(musicDockIcon);
+      typeTerminal("Music opened");
+    }
+    else if(command==="close notes"){
+      closeWindow(notes);
+      dockClose(notesDockIcon)
+      typeTerminal("Notes closed");
+    }
+    else if(command==="close mind map"){
+      closeWindow(mindMap);
+      dockClose(mapDockIcon);
+      typeTerminal("Mind Map closed");
+    }
+    else if(command==="close calculator"){
+      closeWindow(calculatorScreen);
+      dockClose(calculatorDockIcon);
+      typeTerminal("Calculator closed");
+    }
+    else if(command==="close paint"){
+      closeWindow(paint);
+      dockClose(paintDockIcon);
+      typeTerminal("Paint closed");
+    }
+    else if(command==="close gallery"){
+      closeWindow(galleryScreen);
+      dockClose(galleryDockIcon);
+      typeTerminal("Gallery closed");
+    }
+    else if(command==="close browser"){
+      closeWindow(browser);
+      dockClose(browserDockIcon);
+      typeTerminal("Browser closed");
+    }
+    else if(command==="close files"){
+      closeWindow(files);
+      dockClose(filesDockIcon);
+      typeTerminal("Files closed");
+    }
+    else if(command==="close music"){
+      closeWindow(music);
+      dockClose(musicDockIcon);
+      typeTerminal("Music closed");
+    }
+    else if(command==="close terminal", "terminate", "goodbye"){
+      closeWindow(terminalScreen);
+      dockClose(terminalDockIcon);
+    }
+    else{
+      printTerminal("Unknown command.");
+    }
+}
+
+const terminalInput =document.getElementById("terminalInput");
+terminalInput.addEventListener("keydown",function(e){
+  if(e.key==="Enter"){
+    const command = this.value;
+    printTerminal("> "+command);
+    runCommand(command);
+    this.value="";
+  }
+});
+
+// MUSIC APP OPEN
+
+var musicScreen = document.querySelector("#music");
+var musicScreenClose = document.querySelector("#musicClose");
+var musicScreenOpen = document.querySelector("#musicIcon");
+var musicDockOpen = document.querySelector("#musicDockIcon");
+
+dragElement(document.getElementById("music"));
+
+musicScreenClose.addEventListener("click", function () {
+    closeWindow(musicScreen);
+    dockClose(musicDockOpen);
+});
+
+musicScreenOpen.addEventListener("click", function () {
+    openWindow(musicScreen);
+    dockOpen(musicDockOpen);
+});
+
+musicDockOpen.addEventListener("click", function () {
+    openWindow(musicScreen);
+    dockOpen(musicDockOpen);
+});
+
+// MUSIC PLAYER
+
+const audioPlayer = document.getElementById("audioPlayer");
+const playlist = document.getElementById("playlist");
+const musicPicker = document.getElementById("musicPicker");
+const addMusicButton = document.getElementById("addMusicButton");
+const playPauseButton = document.getElementById("playPause");
+const nextButton = document.getElementById("nextSong");
+const previousButton = document.getElementById("previousSong");
+const progressBar = document.getElementById("progressBar");
+const volumeSlider = document.getElementById("volumeSlider");
+const songTitle = document.getElementById("songTitle");
+const songArtist = document.getElementById("songArtist");
+const currentTime = document.getElementById("currentTime");
+const totalTime = document.getElementById("totalTime");
+const art = document.getElementById("albumArt");
+
+let songs = [];
+let currentSong = 0;
+
+function loadSavedMusic() {
+  getFiles("Music", function(files) {
+    songs = [];
+    files.forEach(function(file) {
+      if (!file.content) {
+        return;
+      }
+      if (!file.content.type || !file.content.type.startsWith("audio/")) {
+        return;
+      }
+      songs.push({
+        name: file.name,
+        file: file.content
+      });
+    });
+    updateMusicLibrary();
+  });
+}
+
+addMusicButton.onclick = function () {
+    musicPicker.click();
+};
+
+musicPicker.addEventListener("change", function () {
+  for (const file of this.files) {
+    saveFile("Music",file.name,file,function(fileId) {
+      songs.push({
+        name: file.name,
+        file: file
+      });
+      updateMusicLibrary();
+    });
+  }
+  this.value = "";
+});
+
+function updateMusicLibrary() {
+    playlist.innerHTML = "";
+    songs.forEach(function (song, index) {
+        const button = document.createElement("button");
+        button.className = "songButton";
+        button.textContent = song.name;
+        button.onclick = function () {
+            loadSong(index);
+        };
+        playlist.appendChild(button);
+    });
+}
+
+function loadSong(index) {
+    currentSong = index;
+    audioPlayer.src = URL.createObjectURL(songs[index].file);
+    songTitle.textContent = songs[index].name;
+    songArtist.textContent = "Local File";
+    document.querySelectorAll(".songButton").forEach(function (button) {
+        button.classList.remove("active");
+    });
+    playlist.children[index].classList.add("active");
+    audioPlayer.play();
+    playPauseButton.textContent = "⏸";
+}
+
+playPauseButton.onclick = function () {
+    if (audioPlayer.paused) {
+        audioPlayer.play();
+        playPauseButton.textContent = "⏸";
+        art.classList.add("albumartt");
+    } else {
+        audioPlayer.pause();
+        playPauseButton.textContent = "▶";
+        art.classList.remove("albumartt");
+    }
+};
+
+nextButton.onclick = function () {
+    if (songs.length === 0) return;
+    currentSong++;
+    if (currentSong >= songs.length) {
+        currentSong = 0;
+    }
+    loadSong(currentSong);
+};
+
+previousButton.onclick = function () {
+    if (songs.length === 0) return;
+    currentSong--;
+    if (currentSong < 0) {
+        currentSong = songs.length - 1;
+    }
+    loadSong(currentSong);
+};
+
+volumeSlider.oninput = function () {
+    audioPlayer.volume = this.value;
+};
+
+audioPlayer.onended = function () {
+    nextButton.click();
+};
+
+function formatTime(seconds) {
+    if (isNaN(seconds)) return "0:00";
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return minutes + ":" + String(secs).padStart(2, "0");
+}
+
+audioPlayer.addEventListener("loadedmetadata", function () {
+  totalTime.textContent = formatTime(audioPlayer.duration);
+});
+
+audioPlayer.addEventListener("timeupdate", function () {
+  currentTime.textContent = formatTime(audioPlayer.currentTime);
+  if (audioPlayer.duration) {
+    progressBar.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+  }
+});
+
+progressBar.oninput = function () { 
+  if (audioPlayer.duration) {
+    audioPlayer.currentTime = (this.value / 100) * audioPlayer.duration;
+  }
+};
+
+// NOTIFICATION CENTER CODE
+
+var notifications = document.querySelector("#notificationCenter")
+var notifScreenClose = document.querySelector("#notificationClose")
+notifScreenClose.addEventListener("click", function() {
+  closeWindow(notifications);
+});
+
+function newNotification(notificationMessage) {
+  const notifs = document.getElementById("notificationCenter");
+  const notifText = document.getElementById("notificationText");
+  const timebar =  document.querySelector(".timerbar");
+  if (!notifs || !notifText || !timebar) {
+    return;
+  }
+  notifText.innerHTML = "";
+  notifs.style.display = "flex";
+  notifText.textContent = notificationMessage;
+  setTimeout(function() {closeWindow(notifs);}, 5000);
+  timebar.classList.add("notifTime");
+}
+
+// CALENDAR
+
+const clock = document.getElementById("timeElement");
+const calendarPopup = document.getElementById("calendarPopup");
+const calendarDays = document.getElementById("calendarDays");
+const calendarMonthYear = document.getElementById("calendarMonthYear");
+const calendarPrev = document.getElementById("calendarPrev");
+const calendarNext = document.getElementById("calendarNext");
+const calendarToday = document.getElementById("calendarToday");
+
+let calendarDate = new Date();
+let selectedDate = new Date();
+
+function renderCalendar() {
+    calendarDays.innerHTML = "";
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+    const monthName = calendarDate.toLocaleString("default", {
+        month: "long"
+    });
+    calendarMonthYear.textContent = monthName + " " + year;
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement("div");
+        empty.className = "calendarDay empty";
+        calendarDays.appendChild(empty);
+    }
+    for (let day = 1; day <= daysInMonth; day++) {
+        const button = document.createElement("button");
+        button.className = "calendarDay";
+        button.textContent = day;
+        const thisDate = new Date(
+            year,
+            month,
+            day
+        );
+        const now = new Date();
+        if (
+            thisDate.getFullYear() === now.getFullYear() &&
+            thisDate.getMonth() === now.getMonth() &&
+            thisDate.getDate() === now.getDate()
+        ) {
+            button.classList.add("today");
+        }
+        if (
+            thisDate.getFullYear() === selectedDate.getFullYear() &&
+            thisDate.getMonth() === selectedDate.getMonth() &&
+            thisDate.getDate() === selectedDate.getDate()
+        ) {
+            button.classList.add("selected");
+        }
+        button.onclick = function () {
+            selectedDate = thisDate;
+            renderCalendar();
+        };
+        calendarDays.appendChild(button);
+    }
+}
+
+clock.addEventListener("click", function(event) {
+    event.stopPropagation();
+    calendarPopup.classList.toggle("show");
+    if (calendarPopup.classList.contains("show")) {
+        const rect = clock.getBoundingClientRect();
+        calendarPopup.style.right = "5px";
+        calendarPopup.style.bottom = (window.innerHeight - rect.top + 10) + "px";
+        calendarDate = new Date();
+        renderCalendar();
+    }
+});
+
+calendarPrev.addEventListener("click", function(event) {
+    event.stopPropagation();
+    calendarDate.setMonth(
+        calendarDate.getMonth() - 1
+    );
+    renderCalendar();
+});
+
+calendarNext.addEventListener("click", function(event) {
+    event.stopPropagation();
+    calendarDate.setMonth(
+        calendarDate.getMonth() + 1
+    );
+    renderCalendar();
+});
+
+calendarToday.addEventListener("click", function(event) {
+    event.stopPropagation();
+    const today = new Date();
+    calendarDate = new Date(today);
+    selectedDate = new Date(today);
+    renderCalendar();
+});
+
+//GENERAL FUNCTIONS
+
 document.querySelectorAll(
 ".window,.paintwindow,.autoWindow"
 ).forEach(window=>{
@@ -890,4 +1947,43 @@ document.querySelectorAll(
     });
 });
 
+function dockOpen(dock){
+    dock.classList.add("open");
+}
+
+function dockClose(dock){
+    dock.classList.remove("open");
+}
+
+let selectedAppIcon = null;
+const icons = document.querySelectorAll(".appicon");
+icons.forEach(icon => {
+  icon.addEventListener("contextmenu", function(event) {
+    event.preventDefault();
+    selectedAppIcon = icon;
+    showAppMenu(event.pageX, event.pageY);
+  });
+});
+
+function showAppMenu(x, y) {
+  const menu = document.getElementById("appIconMenu");
+  menu.style.left = `${x}px`;
+  menu.style.top = `${y}px`;
+  menu.style.display = "flex";
+}
+
+function hideAppIcon() {
+  if (selectedAppIcon) {
+    selectedAppIcon.style.display = "none";
+  }
+  hideAppMenu();
+}
+
+document.addEventListener("click",function(){
+  hideAppMenu();
+});
+
+function hideAppMenu() {
+  document.getElementById("appIconMenu").style.display = "none";
+}
 //COMMENT JUST FOR FUN
