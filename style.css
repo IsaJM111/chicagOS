@@ -2266,3 +2266,533 @@ body::before{
 .aboutSection::-webkit-scrollbar-thumb:hover{
     background:rgba(0,0,0,.5);
 }
+
+#startupScreen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            rgba(255,255,255,.95),
+            transparent 32%
+        ),
+        linear-gradient(
+            to bottom,
+            #63bdf5 0%,
+            #9edcff 48%,
+            #d9f1ff 75%,
+            #f4fbff 100%
+        );
+    z-index: 999999;
+    overflow: hidden;
+    opacity: 1;
+    transition:
+        opacity 1.2s ease,
+        visibility 1.2s ease;
+}
+
+#startupScreen.finished {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.startupStars {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.8) 1px,
+            transparent 2px
+        );
+    background-size: 130px 110px;
+    opacity: .35;
+    animation: startupSkyParticles 15s linear infinite;
+}
+
+@keyframes startupSkyParticles {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(30px);
+    }
+}
+
+.startupGlow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    left: 50%;
+    top: 25%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.9) 0%,
+            rgba(255,235,170,.45) 30%,
+            rgba(255,255,255,0) 70%
+        );
+    filter: blur(25px);
+    animation:  startupGlow 5s ease-in-out infinite;
+}
+
+@keyframes startupGlow {
+    0%,
+    100% {
+        opacity: .65;
+        transform:
+            translate(-50%, -50%)
+            scale(.95);
+    }
+    50% {
+        opacity: .95;
+        transform:
+            translate(-50%, -50%)
+            scale(1.08);
+    }
+}
+
+.startupScreen::before,.startupScreen::after {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 80px;
+    border-radius: 100px;
+    background: rgba(255,255,255,.7);
+    filter: blur(2px);
+    opacity: .65;
+}
+
+.startupScreen::before {
+    top: 14%;
+    left: -320px;
+    box-shadow:
+        70px 20px 0 15px rgba(255,255,255,.65),
+        150px -5px 0 25px rgba(255,255,255,.6);
+    animation: cloudMoveOne 24s linear infinite;
+}
+
+.startupScreen::after {
+    top: 28%;
+    right: -350px;
+    box-shadow:
+        -80px 20px 0 18px rgba(255,255,255,.6),
+        -160px -5px 0 25px rgba(255,255,255,.55);
+    animation:  cloudMoveTwo 30s linear infinite;
+}
+
+@keyframes cloudMoveOne {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(100vw + 650px));
+    }
+}
+
+@keyframes cloudMoveTwo {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(-100vw - 650px));
+    }
+}
+
+.startupContent {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 20;
+    width: min(600px, 85vw);
+    color: #17324d;
+    text-shadow: 0 1px 2px rgba(255,255,255,.7);
+}
+
+.startupSmallText {
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: #315b78;
+    opacity: 0;
+    animation: startupSmallText .8s ease forwards;
+    animation-delay: .3s;
+}
+
+@keyframes startupSmallText {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: .75;
+        transform: translateY(0);
+    }
+}
+
+.startupLogo {
+    margin-top: 12px;
+    font-size: clamp(48px, 8vw, 92px);
+    font-weight: 800;
+    letter-spacing: 8px;
+    color: #174b73;
+    text-shadow:
+        0 2px 5px rgba(255,255,255,.8),
+        0 8px 25px rgba(40,100,150,.2);
+
+    opacity: 0;
+    transform: scale(.85);
+    animation:
+        startupLogoAppear 1.2s
+        cubic-bezier(.2,.8,.2,1)
+        forwards;
+    animation-delay: .6s;
+}
+
+.startupLogo span {
+    display: inline-block;
+    color: #087dcc;
+    animation: startupLogoPulse 2.5s ease-in-out infinite;
+    animation-delay: 1.8s;
+}
+
+@keyframes startupLogoAppear {
+    from {
+        opacity: 0;
+        transform: scale(.85);
+        filter: blur(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes startupLogoPulse {
+    0%,
+    100% {
+        text-shadow:
+            0 0 8px rgba(20,140,220,.15);
+    }
+    50% {
+        text-shadow:
+            0 0 25px rgba(20,140,220,.45);
+    }
+}
+
+.startupSubtitle {
+    margin-top: 8px;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: #41677f;
+    opacity: 0;
+    animation:startupSubtitleAppear .8s ease forwards;
+    animation-delay: 1.4s;
+}
+
+@keyframes startupSubtitleAppear {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: .75;
+    }
+}
+
+.startupProgress {
+    width: 280px;
+    max-width: 70vw;
+    height: 4px;
+    margin: 25px auto 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(255,255,255,.65);
+    border: 1px solid rgba(70,120,150,.12);
+    box-shadow: inset 0 1px 3px rgba(40,80,110,.12);
+    opacity: 0;
+    animation: startupProgressAppear .5s ease forwards;
+    animation-delay: 1.6s;
+}
+
+@keyframes startupProgressAppear {
+    to {
+        opacity: 1;
+    }
+}
+
+#startupProgressBar {
+    width: 0%;
+    height: 100%;
+    border-radius: inherit;
+    background:
+        linear-gradient(
+            90deg,
+            #1688d4,
+            #55c5f5
+        );
+    box-shadow: 0 0 10px rgba(30,160,220,.45);
+    transition:  width .15s linear;
+}
+
+#startupStatus {
+    font-family: monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #47718b;
+    opacity: .7;
+    min-height: 14px;
+}
+
+.startupSkyline {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 30%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 7px;
+    opacity: 0;
+    animation:skylineAppear 1.8s ease forwards;
+    animation-delay: 1s;
+}
+
+@keyframes skylineAppear {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.building {
+    position: relative;
+    width: 5vw;
+    min-width: 30px;
+    max-width: 80px;
+    background:
+        linear-gradient(
+            to right,
+            #7f9daf,
+            #405d70
+        );
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-top: 1px solid rgba(255,255,255,.7);
+    box-shadow: 0 0 18px rgba(50,100,130,.12);
+}
+
+.building1 {
+    height: 90px;
+}
+
+.building2 {
+    height: 150px;
+}
+
+.building3 {
+    height: 110px;
+}
+
+.building4 {
+    height: 220px;
+}
+
+.building5 {
+    height: 300px;
+}
+
+.building6 {
+    height: 180px;
+}
+
+.building7 {
+    height: 260px;
+}
+
+.building8 {
+    height: 130px;
+}
+
+.building9 {
+    height: 200px;
+}
+
+.building10 {
+    height: 100px;
+}
+
+.buildingLight {
+    position: absolute;
+    width: 5px;
+    height: 7px;
+    background: rgba(255,230,150,.85);
+    box-shadow:0 0 5px rgba(255,200,80,.35);
+    animation:buildingLightFlicker 3s ease-in-out infinite;
+}
+
+.light1 {
+    left: 30%;
+    bottom: 120px;
+}
+
+.light2 {
+    left: 45%;
+    bottom: 160px;
+}
+
+.light3 {
+    left: 58%;
+    bottom: 90px;
+}
+
+.light4 {
+    left: 68%;
+    bottom: 210px;
+}
+
+.light5 {
+    left: 35%;
+    bottom: 240px;
+}
+
+.light6 {
+    left: 48%;
+    bottom: 130px;
+}
+
+.light7 {
+    left: 73%;
+    bottom: 150px;
+}
+
+.light8 {
+    left: 25%;
+    bottom: 100px;
+}
+
+@keyframes buildingLightFlicker {
+    0%,
+    100% {
+        opacity: .45;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.startupTrain {
+    position: absolute;
+    left: -180px;
+    top: 48%;
+    z-index: 15;
+    animation:
+        trainMove 4.5s
+        cubic-bezier(.25,.1,.25,1)
+        forwards;
+    animation-delay: 1.8s;
+}
+
+.trainCar {
+    width: 145px;
+    height: 38px;
+    border-radius: 7px;
+    background:
+        linear-gradient(
+            to bottom,
+            #f5f8fa,
+            #c5d0d8
+        );
+    border:2px solid rgba(255,255,255,.9);
+    box-shadow:0 4px 15px rgba(30,80,110,.2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+}
+
+.trainWindow {
+    flex: 1;
+    height: 20px;
+    border-radius: 3px;
+    background:
+        linear-gradient(
+            135deg,
+            #2c83b6,
+            #a7ddf4
+        );
+    border:1px solid rgba(255,255,255,.8);
+    box-shadow:inset 0 1px 4px rgba(0,60,100,.2);
+}
+
+@keyframes trainMove {
+    from {
+        left: -180px;
+    }
+    to {
+        left: calc(100% + 180px);
+    }
+}
+
+.startupTracks {
+    position: absolute;
+    left: 0;
+    top: calc(48% + 44px);
+    width: 100%;
+    height: 3px;
+    background:rgba(65,90,105,.28);
+    box-shadow:0 8px 0 rgba(65,90,105,.14);
+}
+
+#skipStartup {
+    position: absolute;
+    right: 25px;
+    bottom: 22px;
+    z-index: 50;
+    border:1px solid rgba(50,100,130,.25);
+    background:rgba(255,255,255,.42);
+    color:rgba(35,75,100,.75);
+    padding: 7px 14px;
+    border-radius: 9px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 3px 12px rgba(40,90,120,.12);
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+#skipStartup:hover {
+    background: rgba(255,255,255,.75);
+    color: #174b73;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+    .startupSkyline {
+        height: 22%;
+    }
+    .building {
+        min-width: 20px;
+    }
+    .startupLogo {
+        letter-spacing: 4px;
+    }
+    .startupSmallText {
+        letter-spacing: 3px;
+    }
+}
