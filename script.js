@@ -1986,4 +1986,83 @@ document.addEventListener("click",function(){
 function hideAppMenu() {
   document.getElementById("appIconMenu").style.display = "none";
 }
+
+// CHICAGOS STARTUP SEQUENCE
+
+(function () {
+    const startupScreen =document.getElementById("startupScreen");
+    const progressBar =document.getElementById("startupProgressBar");
+    const startupStatus = document.getElementById("startupStatus");
+    const skipButton = document.getElementById("skipStartup");
+    if (!startupScreen) {
+        return;
+    }
+    const bootMessages = [
+        "INITIALIZING DESKTOP...",
+        "LOADING CHICAGO ENVIRONMENT...",
+        "STARTING WINDOW MANAGER...",
+        "CONNECTING FILE SYSTEM...",
+        "LOADING APPLICATIONS...",
+        "STARTING MUSIC PLAYER...",
+        "STARTING GALLERY...",
+        "INITIALIZING SYSTEM SERVICES...",
+        "DESKTOP READY."
+    ];
+    const startupDuration = 5500;
+    const startTime = performance.now();
+    let finished = false;
+    function finishStartup() {
+        if (finished) {
+            return;
+        }
+        finished = true;
+        progressBar.style.width = "100%";
+        startupStatus.textContent ="WELCOME TO CHICAGO.";
+        setTimeout(function () {
+            startupScreen.classList.add("finished");
+            setTimeout(function () {
+                startupScreen.remove();
+            }, 1300);
+        }, 250);
+    }
+    function updateStartup(now) {
+        if (finished) {
+            return;
+        }
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / startupDuration,1 );
+        const easedProgress = 1 - Math.pow(1 - progress, 2);
+        progressBar.style.width =(easedProgress * 100) + "%";
+        const messageIndex =
+            Math.min(
+                Math.floor(
+                    progress * bootMessages.length
+                ),
+                bootMessages.length - 1
+            );
+        startupStatus.textContent =
+            bootMessages[messageIndex];
+        if (progress >= 1) {
+            finishStartup();
+            return;
+        }
+        requestAnimationFrame(updateStartup);
+    }
+    skipButton.addEventListener(
+        "click",
+        function () {
+            finishStartup();
+        }
+    );
+    document.addEventListener(
+        "keydown",
+        function (event) {
+            if (event.key === "Escape") {
+                finishStartup();
+            }
+        }
+    );
+    requestAnimationFrame(updateStartup);
+})();
+
 //COMMENT JUST FOR FUN
