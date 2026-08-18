@@ -34,6 +34,7 @@ An OS that is Chicago themed, has many fully functional apps, and a central file
 - Music app
   - Add audio files from computer
   - Play/pause, forward, back
+  - Forward/backwards time navigation, volume control
   - Playlist sidebar
 - Terminal app
   - Command input
@@ -56,6 +57,7 @@ An OS that is Chicago themed, has many fully functional apps, and a central file
   - Files saved from Notes, Paint, Gallery, and Music all appear in designated folders
 
 # Features => Desktop
+- Animated startup sequence
 - Date and local time, updates every second
 - Calendar popup
 - File app and File system
