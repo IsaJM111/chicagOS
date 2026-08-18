@@ -3,7 +3,7 @@ An OS that is Chicago themed, has many fully functional apps, and a central file
 
 <img width="1920" height="935" alt="OSlog17-image" src="https://github.com/user-attachments/assets/8828d99f-8dba-4e06-91c1-35bd862b12b0" />
 
-**Demo link ->** https://isajm111.github.io/chicagOS/
+**Demo link ->** **https://isajm111.github.io/chicagOS/** **<-**
 
 # Features => Apps
 - Notes app
