@@ -1666,7 +1666,7 @@ body::before{
 @keyframes albumartt {
     0% {background:rgba(55,255,255,.35);box-shadow:0 10px 65px rgba(55,255,255,.50)}
     25% {background:rgba(10,100,200,.35);box-shadow:0 10px 65px rgba(10,100,200,.50)}
-    50% {background: rgba(0, 100, 200,.35);box-shadow:0 10px 65px rgba(0, 100, 200,.50)}
+    50% {background: rgba(100, 200, 100,.35);box-shadow:0 10px 65px rgba(100, 200, 100,.50)}
     75% {background:rgba(55,155,255,.35);box-shadow:0 10px 65px rgba(55,155,255,.50);}
     100% {background:rgba(55,255,255,.35);box-shadow:0 10px 65px rgba(55,255,255,.50)}
 }
