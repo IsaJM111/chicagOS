@@ -92,6 +92,7 @@
           <div id="terminalDockIcon" class="dockIcon">💻</div>
           <div id="filesDockIcon" class="dockIcon">📁</div>
           <div id="musicDockIcon" class="dockIcon">🎶</div>
+          <div id="gameDockIcon" class="dockIcon">🎮</div>
        </div>
        <div class="headerRight">
         <button id="settingsButton"> ⚙️</button>
@@ -154,11 +155,19 @@
       </div>
       <p style="margin: 0; justify-content: center;">Music</p>
       </div>
+<div class="appicon">
+      <div id="gameIcon" class="desktopIcon">
+        <div style="font-size: 42px; width: 50px; height: 50px; display:flex; align-items: center; justify-content: center;">🎮</div>
+      </div>
+      <p style="margin: 0; justify-content: center;">Snake</p>
+      </div>
     </div>
 <!-- QUOTES -->
     <div class="quote" id="quotes">
       'I miss everything about Chicago, except January and February.' —Gary Cole
     </div>
+<!--WIDGET-->
+    <div class="widget" id="widgets"> </div>
 <!--SETTINGS WINDOW-->
     <div id="settings" class="window" style="display:none; width:340px;">
     <div class="header" id="settingsheader">
@@ -171,8 +180,16 @@
       <div class="wallpaperSettings">
         <h3>Wallpaper</h3>
         <label class="wallpaperCard">
-          <input class="wallpaperChoice" type="radio"name="wallpaper"value="classic"checked>
-          <div><strong>Classic Chicago</strong></div>
+          <input class="wallpaperChoice" type="radio"name="wallpaper"value="classic 1"checked>
+          <div><strong>Classic Chicago 1</strong></div>
+        </label>
+        <label class="wallpaperCard">
+          <input class="wallpaperChoice" type="radio"name="wallpaper"value="classic 2">
+          <div><strong>Classic Chicago 2</strong></div>
+        </label>
+        <label class="wallpaperCard">
+          <input class="wallpaperChoice" type="radio"name="wallpaper"value="classic 3">
+          <div><strong>Classic Chicago 3</strong></div>
         </label>
         <label class="wallpaperCard">
           <input class="wallpaperChoice"type="radio"name="wallpaper"value="dynamic">
@@ -189,12 +206,24 @@
           <div><strong>Toggle Quotes</strong></div>
         </div>
       </div>
+      <div class="quotesSettings">
+        <h3>Dock</h3>
+        <label class="wallpaperCard">
+          <input class="wallpaperChoice" type="radio"name="dock"value="bottom dock">
+          <div><strong>Bottom Dock</strong></div>
+        </label>
+        <label class="wallpaperCard">
+          <input class="wallpaperChoice"type="radio"name="dock"value="top dock">
+          <div><strong>Top Dock</strong></div>
+        </label>
+      </div>
       <div class="about">
         <h3>About/help</h3>
         <div class="aboutSection">
-          <p><strong>chicagOS v2.1.0</strong></p>
+          <p><strong>chicagOS v2.1.1</strong></p>
           <p>chicagOS is a browser-based desktop enviroment inspired by Chicago.</p>
           <p>Red circle button closes windows, select applications can be resized in the bottom right corner.</p>
+          <p>Toggle the dock by right-clicking the dock or bottom of screen.</p>
           <p>Made entirely with HTML, JS, and CSS.</p>
           <p>Created by Isadora M, @IsaJM111 on Github</p>
         </div>
@@ -342,8 +371,8 @@
     <h2>All Photos</h2>
   </div>
   <div id="galleryGridPhotos" class="galleryGridPhotos"></div>
-</div>
-  </div>
+    </div>
+    </div>
     </div>
 <!-- PAINT WINDOW  -->
     <div id="paint" class="paintwindow" style="display: none">
@@ -388,7 +417,9 @@
       </div>
       <div id="browserHome">
         <h1>Welcome to ChicagOS Browser</h1>
-        <p>Search the web or choose a shortcut.</p>
+        <p>Search the web or choose a shortcut.
+          
+        </p>
         <div class="browserShortcuts">
             <div class="browserShortcut" data-url="https://www.wikipedia.org">
               📚
@@ -405,6 +436,11 @@
             <div class="browserShortcut" data-url="https://maps.google.com">
               🗺
               <span>Maps</span>
+            </div>
+            <p>*Note, The search bar is non-functioning due to the limitations of i-frame browsers. Try Wikipedia!</p>
+            <div class="browserShortcut" data-url="https://github.com">
+              🗁
+              <span>Github</span>
             </div>
          </div>
       </div>
@@ -504,8 +540,8 @@
       <button id="deleteFolderButton">Delete Folder</button>
       <button id="renameFolderButton">Rename Folder</button>
     </div>
-    <div id="appIconMenu">
-      <button id="hideButton" onclick="hideAppIcon()">Hide App Icon</button>
+    <div id="taskMenu">
+      <button id="hideTaskButton" onclick="hideBar()">Toggle Taskbar</button>
     </div>
 <!--NOTIFICATION CENTER-->
     <div class="notificationBox" id="notificationCenter" style="display:none">
