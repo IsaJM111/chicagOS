@@ -335,10 +335,23 @@ document.getElementById("settingsClose").onclick=()=>{
 function setWallpaper(type){
     const background=
     document.getElementById("background");
-    if(type==="classic"){
-        background.style.backgroundImage=
-        "url('https://images.squarespace-cdn.com/content/v1/55664553e4b0e48846329dc0/1513810378697-SE401H22HUNY98E30669/samples.jpg')";
+    if(type==="classic 1"){
+        background.style.backgroundImage="url('https://isorepublic.com/wp-content/uploads/2018/11/chicago-night.jpg')";
         sky.style.display="none";
+        sky.style.display="none";
+        clouds.style.display="none";
+        skyline.style.display="none";
+        lake.style.display="none";
+        stars.style.display="none";
+    } else if(type==="classic 2"){
+        background.style.backgroundImage="url('https://www.framedcanvasart.com/wp-content/uploads/2025/05/Aerial-View-of-Chicago-Skyline-at-Sunset.jpg')";
+        sky.style.display="none";
+        clouds.style.display="none";
+        skyline.style.display="none";
+        lake.style.display="none";
+        stars.style.display="none";
+    } else if(type==="classic 3"){
+        background.style.backgroundImage="url('https://images.squarespace-cdn.com/content/v1/55664553e4b0e48846329dc0/1513810378697-SE401H22HUNY98E30669/samples.jpg')";
         clouds.style.display="none";
         skyline.style.display="none";
         lake.style.display="none";
@@ -364,11 +377,12 @@ document.querySelectorAll('input[name="wallpaper"]').forEach(button=>{
   );
 });
 
-const savedWallpaper = localStorage.getItem("wallpaper") || "classic";
+const savedWallpaper = localStorage.getItem("wallpaper") || "classic 1";
 setWallpaper(savedWallpaper);
 document.querySelector(
 `input[value="${savedWallpaper}"]`
 ).checked=true;
+
 const quotetoggle = document.getElementById('toggle');
 const quote = document.getElementById('quotes');
 quotetoggle.addEventListener('change', function() {
@@ -378,6 +392,32 @@ quotetoggle.addEventListener('change', function() {
     quote.style.display = "none"
   }
 });
+
+function setDock(type){
+    const d=document.querySelector(".dock");
+    const a=document.querySelector(".apps");
+    if(type==="bottom dock"){
+        a.style.top = "1%";
+        d.style.top = "93%"
+    } else {
+        a.style.top = "10%";
+        d.style.top = "0%"
+    }
+}
+
+document.querySelectorAll('input[name="dock"]').forEach(button=>{
+  button.addEventListener(
+    "change",
+    function(){
+      setDock(this.value);
+      localStorage.setItem("dock",this.value);
+    }
+  );
+});
+
+const savedDock = localStorage.getItem("dock") || "bottom dock";
+setDock(savedDock);
+document.querySelector(`input[value="${savedDock}"]`).checked=true;
 
 // CLOCK
 
@@ -400,6 +440,7 @@ dragElement(document.getElementById("browser"));
 dragElement(document.getElementById("loadPaintWindow"));
 dragElement(document.getElementById("settings"));
 dragElement(document.getElementById("quotes"));
+dragElement(document.getElementById("widgets")); 
 dragElement(document.getElementById("terminal"));
 dragElement(document.getElementById("files"));
 dragElement(document.getElementById("music"));
@@ -1344,6 +1385,36 @@ function cycleQuotes() {
   quoteElement.textContent = quotes[nextQuoteIndex];
 }
 setInterval(cycleQuotes, 50000);
+ // WIDGET MAIN CODE
+
+const widgets = [
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCM_d9SQ56xa8ccPT63FoBy0Jec32p7TRisgVzN3A0Qg&s=10",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrYM8BBcsbNRMvCcrskAKW70lWv3N3CwlDNYAY6fsHUw&s=10",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWshF1loKaYOPI7RpThNjeZWS-yZMysDUg8yvo5DzMwA&s=10",
+  "https://i.redd.it/3enek456oxf31.jpg",
+  "https://wallpapers.com/images/hd/dark-aesthetic-chicago-city-at-night-j8nbcohdzy6xytxj.jpg",
+  "https://static1.squarespace.com/static/57f96248d482e9a19e507a7e/5e62d0cb4cd4c7519bd3a3ca/5e62d0ee4cd4c7519bd3a59c/1726440655091/?format=1500w",
+  "https://w0.peakpx.com/wallpaper/809/229/HD-wallpaper-cade-on-chicago-city-aesthetic-new-york-city-travel-city-new-york-summer.jpg",
+  "https://www.shutterstock.com/image-photo/chicago-river-riverwalk-on-cloudy-600nw-2523321043.jpg",
+  "https://i.redd.it/3wt8l37qtjg21.jpg",
+  "https://external-preview.redd.it/theres-something-about-the-sheer-raw-grit-of-this-city-that-v0-6jPW7Kz-EnBW1CqYGJPYr8FBaJbeBDvXvnRHjA7GJXM.jpg?width=640&crop=smart&auto=webp&s=f7805154337e1af44dd7a8bdfd6c755d7f0bdc0b",
+  "https://images.squarespace-cdn.com/content/v1/57f96248d482e9a19e507a7e/1583534580986-UWYK00A7M35D9MYNKJ6C/Photography+Point+North+Ave+Beach+Chicago+John+Hancock+Center+Sunset+City+Illinois+Chicago+Blue+Hour+Ice+Icebergs+Lake+Michigan+Skyline",
+  "https://freechicagowalkingtours.com/wp-content/uploads/2017/04/el-train.jpg",
+  "https://imageio.forbes.com/i-forbesimg/media/lists/places/chicago-il_416x416.jpg?format=jpg&height=416&width=416&fit=bounds"
+];
+
+let currentWidgetIndex = 0;
+
+function cycleWidget() {
+  const widgetElement = document.getElementById("widgets");
+  currentWidgetIndex = (currentWidgetIndex + 1) % widgets.length;
+  widgetElement.style.backgroundImage = `url("${widgets[currentWidgetIndex]}")`;
+  widgetElement.textContent = "";
+}
+const widgetElement = document.getElementById("widgets");
+widgetElement.style.backgroundImage =`url("${widgets[currentWidgetIndex]}")`;
+
+setInterval(cycleWidget, 5000);
 
 // BROWSER APP OPEN
 
@@ -1901,15 +1972,15 @@ function renderCalendar() {
 }
 
 clock.addEventListener("click", function(event) {
-    event.stopPropagation();
-    calendarPopup.classList.toggle("show");
-    if (calendarPopup.classList.contains("show")) {
-        const rect = clock.getBoundingClientRect();
-        calendarPopup.style.right = "5px";
-        calendarPopup.style.bottom = (window.innerHeight - rect.top + 10) + "px";
-        calendarDate = new Date();
-        renderCalendar();
-    }
+  event.stopPropagation();
+  calendarPopup.classList.toggle("show");
+  if (calendarPopup.classList.contains("show")) {
+    const rect = clock.getBoundingClientRect();
+    calendarPopup.style.right = "5px";
+    calendarPopup.style.bottom = (window.innerHeight - rect.top + 10) + "px";
+    calendarDate = new Date();
+    renderCalendar();
+  }
 });
 
 calendarPrev.addEventListener("click", function(event) {
@@ -1955,36 +2026,48 @@ function dockClose(dock){
     dock.classList.remove("open");
 }
 
-let selectedAppIcon = null;
-const icons = document.querySelectorAll(".appicon");
-icons.forEach(icon => {
-  icon.addEventListener("contextmenu", function(event) {
-    event.preventDefault();
-    selectedAppIcon = icon;
-    showAppMenu(event.pageX, event.pageY);
-  });
-});
-
-function showAppMenu(x, y) {
-  const menu = document.getElementById("appIconMenu");
-  menu.style.left = `${x}px`;
-  menu.style.top = `${y}px`;
-  menu.style.display = "flex";
-}
-
-function hideAppIcon() {
-  if (selectedAppIcon) {
-    selectedAppIcon.style.display = "none";
-  }
-  hideAppMenu();
-}
-
 document.addEventListener("click",function(){
   hideAppMenu();
 });
 
-function hideAppMenu() {
-  document.getElementById("appIconMenu").style.display = "none";
+const bar = document.querySelector(".dock");
+bar.addEventListener("contextmenu", function(event) {
+    event.preventDefault();
+    showBarMenu(event.pageX, event.pageY-50);
+});
+
+function showBarMenu(x, y) {
+  const menu = document.getElementById("taskMenu");
+  const dBar = document.querySelector(".dock");
+  const b = document.getElementById("hideTaskButton");
+  const o = window.getComputedStyle(dBar).opacity;
+  menu.style.left = `${x}px`;
+  menu.style.top = `${y}px`;
+  menu.style.display = "flex";
+  if (o == 1){
+    b.textContent = "Hide Task Bar";
+  } else if (o == 0) {
+    b.textContent = "Show Task Bar";
+  }
+}
+
+function hideBar() {
+  const dockBar = document.querySelector(".dock");
+  const current = window.getComputedStyle(dockBar).opacity;
+  if (current == 1){
+    dockBar.style.opacity = 0;
+  } else if (current == 0) {
+    dockBar.style.opacity = 1;
+  }
+  hideBarMenu();
+}
+
+document.addEventListener("click",function(){
+  hideBarMenu();
+});
+
+function hideBarMenu() {
+  document.getElementById("taskMenu").style.display = "none";
 }
 
 // CHICAGOS STARTUP SEQUENCE
