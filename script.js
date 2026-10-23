@@ -2036,7 +2036,7 @@ bar.addEventListener("contextmenu", function(event) {
     showBarMenu(event.pageX, event.pageY-50);
 });
 
-function showBarMenu(x, y) {
+/*function showBarMenu(x, y) {
   const menu = document.getElementById("taskMenu");
   const dBar = document.querySelector(".dock");
   const b = document.getElementById("hideTaskButton");
@@ -2061,7 +2061,7 @@ function hideBar() {
   }
   hideBarMenu();
 }
-
+*/
 document.addEventListener("click",function(){
   hideBarMenu();
 });
