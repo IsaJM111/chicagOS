@@ -444,6 +444,7 @@ dragElement(document.getElementById("widgets"));
 dragElement(document.getElementById("terminal"));
 dragElement(document.getElementById("files"));
 dragElement(document.getElementById("music"));
+dragElement(document.getElementById("games"));
 
 function dragElement(element) {
   var initialX = 0;
@@ -1889,6 +1890,28 @@ progressBar.oninput = function () {
   }
 };
 
+// GAMES APP OPEN
+
+var gamesScreen = document.querySelector("#games");
+var gamesScreenClose = document.querySelector("#gamesClose");
+var gamesScreenOpen = document.querySelector("#gamesIcon");
+var gamesDockOpen = document.querySelector("#gamesDockIcon");
+
+gamesScreenClose.addEventListener("click", function () {
+    closeWindow(gamesScreen);
+    dockClose(gamesDockOpen);
+});
+
+gamesScreenOpen.addEventListener("click", function () {
+    openWindow(gamesScreen);
+    dockOpen(gamesDockOpen);
+});
+
+gamesDockOpen.addEventListener("click", function () {
+    openWindow(gamesScreen);
+    dockOpen(gamesDockOpen);
+});
+
 // NOTIFICATION CENTER CODE
 
 var notifications = document.querySelector("#notificationCenter")
@@ -2026,17 +2049,13 @@ function dockClose(dock){
     dock.classList.remove("open");
 }
 
-document.addEventListener("click",function(){
-  hideAppMenu();
-});
-
 const bar = document.querySelector(".dock");
 bar.addEventListener("contextmenu", function(event) {
     event.preventDefault();
     showBarMenu(event.pageX, event.pageY-50);
 });
 
-/*function showBarMenu(x, y) {
+function showBarMenu(x, y) {
   const menu = document.getElementById("taskMenu");
   const dBar = document.querySelector(".dock");
   const b = document.getElementById("hideTaskButton");
@@ -2061,7 +2080,7 @@ function hideBar() {
   }
   hideBarMenu();
 }
-*/
+
 document.addEventListener("click",function(){
   hideBarMenu();
 });
