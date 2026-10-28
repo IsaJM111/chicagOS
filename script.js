@@ -479,7 +479,7 @@ dragElement(document.getElementById("widgets"));
 dragElement(document.getElementById("terminal"));
 dragElement(document.getElementById("files"));
 dragElement(document.getElementById("music"));
-dragElement(document.getElementById("games"));
+//dragElement(document.getElementById("games"));
 
 function dragElement(element) {
   var initialX = 0;
