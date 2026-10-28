@@ -377,11 +377,30 @@ document.querySelectorAll('input[name="wallpaper"]').forEach(button=>{
   );
 });
 
-const savedWallpaper = localStorage.getItem("wallpaper") || "classic 1";
+
+const wallpaperOptions = [
+  "classic 1",
+  "classic 2",
+  "classic 3",
+  "dynamic"
+];
+
+let savedWallpaper = localStorage.getItem("wallpaper");
+
+if (!wallpaperOptions.includes(savedWallpaper)) {
+  savedWallpaper = "classic 1";
+}
+
 setWallpaper(savedWallpaper);
-document.querySelector(
-`input[value="${savedWallpaper}"]`
-).checked=true;
+
+const wallpaperRadio = document.querySelector(
+  `input[name="wallpaper"][value="${savedWallpaper}"]`
+);
+
+if (wallpaperRadio) {
+  wallpaperRadio.checked = true;
+}
+
 
 const quotetoggle = document.getElementById('toggle');
 const quote = document.getElementById('quotes');
@@ -415,9 +434,25 @@ document.querySelectorAll('input[name="dock"]').forEach(button=>{
   );
 });
 
-const savedDock = localStorage.getItem("dock") || "bottom dock";
+
+const dockOptions = ["bottom dock", "top dock"];
+
+let savedDock = localStorage.getItem("dock");
+
+if (!dockOptions.includes(savedDock)) {
+  savedDock = "bottom dock";
+}
+
 setDock(savedDock);
-document.querySelector(`input[value="${savedDock}"]`).checked=true;
+
+const dockRadio = document.querySelector(
+  `input[name="dock"][value="${savedDock}"]`
+);
+
+if (dockRadio) {
+  dockRadio.checked = true;
+}
+
 
 // CLOCK
 
