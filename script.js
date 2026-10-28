@@ -970,10 +970,6 @@ const defaultGalleryPhotos = [
     name: "Chicago"
   },
   {
-    src: "https://w0.peakpx.com/wallpaper/809/229/HD-wallpaper-cade-on-chicago-city-aesthetic-new-york-city-travel-city-new-york-summer.jpg",
-    name: "Chicago Skyline"
-  },
-  {
     src: "https://www.shutterstock.com/image-photo/chicago-river-riverwalk-on-cloudy-600nw-2523321043.jpg",
     name: "Chicago Riverwalk"
   },
@@ -1430,7 +1426,6 @@ const widgets = [
   "https://i.redd.it/3enek456oxf31.jpg",
   "https://wallpapers.com/images/hd/dark-aesthetic-chicago-city-at-night-j8nbcohdzy6xytxj.jpg",
   "https://static1.squarespace.com/static/57f96248d482e9a19e507a7e/5e62d0cb4cd4c7519bd3a3ca/5e62d0ee4cd4c7519bd3a59c/1726440655091/?format=1500w",
-  "https://w0.peakpx.com/wallpaper/809/229/HD-wallpaper-cade-on-chicago-city-aesthetic-new-york-city-travel-city-new-york-summer.jpg",
   "https://www.shutterstock.com/image-photo/chicago-river-riverwalk-on-cloudy-600nw-2523321043.jpg",
   "https://i.redd.it/3wt8l37qtjg21.jpg",
   "https://external-preview.redd.it/theres-something-about-the-sheer-raw-grit-of-this-city-that-v0-6jPW7Kz-EnBW1CqYGJPYr8FBaJbeBDvXvnRHjA7GJXM.jpg?width=640&crop=smart&auto=webp&s=f7805154337e1af44dd7a8bdfd6c755d7f0bdc0b",
@@ -1924,28 +1919,6 @@ progressBar.oninput = function () {
     audioPlayer.currentTime = (this.value / 100) * audioPlayer.duration;
   }
 };
-
-// GAMES APP OPEN
-
-var gamesScreen = document.querySelector("#games");
-var gamesScreenClose = document.querySelector("#gamesClose");
-var gamesScreenOpen = document.querySelector("#gamesIcon");
-var gamesDockOpen = document.querySelector("#gamesDockIcon");
-
-gamesScreenClose.addEventListener("click", function () {
-    closeWindow(gamesScreen);
-    dockClose(gamesDockOpen);
-});
-
-gamesScreenOpen.addEventListener("click", function () {
-    openWindow(gamesScreen);
-    dockOpen(gamesDockOpen);
-});
-
-gamesDockOpen.addEventListener("click", function () {
-    openWindow(gamesScreen);
-    dockOpen(gamesDockOpen);
-});
 
 // NOTIFICATION CENTER CODE
 
