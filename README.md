@@ -41,8 +41,7 @@ An OS that is Chicago themed, has many fully functional apps, and a central file
   - 8 preset commands, including opening and closing applications and displaying current time and date
 - Settings app
   - Wallpaper selection
-    - Classic wallpaper
-    - Animated wallpaper
+  - Dock Toggle
   - Quote toggle
 - Files app
   - Virtual file system using `IndexedDB`
