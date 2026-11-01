@@ -479,7 +479,6 @@ dragElement(document.getElementById("widgets"));
 dragElement(document.getElementById("terminal"));
 dragElement(document.getElementById("files"));
 dragElement(document.getElementById("music"));
-//dragElement(document.getElementById("games"));
 
 function dragElement(element) {
   var initialX = 0;
@@ -1434,18 +1433,62 @@ const widgets = [
   "https://imageio.forbes.com/i-forbesimg/media/lists/places/chicago-il_416x416.jpg?format=jpg&height=416&width=416&fit=bounds"
 ];
 
+
 let currentWidgetIndex = 0;
+let showingSecondImage = false;
+
+const widgetElement = document.getElementById("widgets");
+
+// Create two image layers so one can fade into the other.
+const imageA = document.createElement("div");
+const imageB = document.createElement("div");
+
+[imageA, imageB].forEach(image => {
+    Object.assign(image.style, {
+        position: "absolute",
+        inset: "0",
+        backgroundSize: "contain",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        borderRadius: "inherit",
+        opacity: "0",
+        transition: "opacity 0.8s ease",
+        pointerEvents: "none"
+    });
+
+    widgetElement.appendChild(image);
+});
+
+function showWidgetImage(index) {
+    const incoming = showingSecondImage ? imageA : imageB;
+    const outgoing = showingSecondImage ? imageB : imageA;
+
+    incoming.style.backgroundImage =
+        `url("${widgets[index]}")`;
+    incoming.style.opacity = "0";
+
+    // Wait for the browser to apply the new image.
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            incoming.style.opacity = "1";
+            outgoing.style.opacity = "0";
+        });
+    });
+
+    showingSecondImage = !showingSecondImage;
+}
+
+showWidgetImage(currentWidgetIndex);
 
 function cycleWidget() {
-  const widgetElement = document.getElementById("widgets");
-  currentWidgetIndex = (currentWidgetIndex + 1) % widgets.length;
-  widgetElement.style.backgroundImage = `url("${widgets[currentWidgetIndex]}")`;
-  widgetElement.textContent = "";
-}
-const widgetElement = document.getElementById("widgets");
-widgetElement.style.backgroundImage =`url("${widgets[currentWidgetIndex]}")`;
+    currentWidgetIndex =
+        (currentWidgetIndex + 1) % widgets.length;
 
-setInterval(cycleWidget, 5000);
+    showWidgetImage(currentWidgetIndex);
+}
+
+setInterval(cycleWidget, 6000);
+
 
 // BROWSER APP OPEN
 
